@@ -10,10 +10,22 @@ import UIKit
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
-
+    //var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+//        window = UIWindow(frame: UIScreen.main.bounds)
+//        
+//        let trackersVC = TrackersViewController()
+//        let statisticsVS = StatisticViewController()
+//        
+//        trackersVC.tabBarItem = UITabBarItem(title: "Трекеры", image: UIImage(resource: .tracTabBar), tag: 0)
+//        statisticsVS.tabBarItem = UITabBarItem(title: "Статистика", image: UIImage(resource: .statTabBar), tag: 1)
+//        
+//        let tabBarController = UITabBarController()
+//        tabBarController.viewControllers = [trackersVC, statisticsVS]
+//        
+//        window?.rootViewController = tabBarController
+//        window?.makeKeyAndVisible()
         return true
     }
 
