@@ -10,33 +10,52 @@ import UIKit
 final class TrackersViewController: UIViewController {
     private var tittleLabel = UILabel()
     private var searchBar = UISearchBar()
-    private var tableView = UITableView()
+    //private var tableView = UITableView()
+    private let collectionView: UICollectionView = {
+        let collectionView = UICollectionView(
+            frame: .zero,
+            collectionViewLayout: UICollectionViewFlowLayout()
+        )
+        collectionView.register(TrackerCollectionViewCell.self, forCellWithReuseIdentifier: "TrackerCell")
+        return collectionView
+    }()
     
-    private var trackers: [String] = []
+    let colors: [UIColor] = [
+        .black, .blue, .brown,
+        .cyan, .green, .orange,
+        .red, .purple, .yellow
+    ]
+    private var trackers: [Tracker] = []
+    private var trackersInCurrentDat: [Tracker] = []
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
+        collectionView.delegate = self
+        collectionView.dataSource = self
         addAllUI()
+        trackers = [Tracker(trackerId: UUID() , title: "dfdfd", emoji: "😄", color: ".red", trackerType: Tracker.TrackerType.regular , day: [Weekday.monday, Weekday.tuesday, Weekday.wednesday, Weekday.thursday, Weekday.friday, Weekday.saturday, Weekday.sunday]), Tracker(trackerId: UUID() , title: "dfdfd", emoji: "🥒", color: ".black", trackerType: Tracker.TrackerType.regular , day: [Weekday.monday, Weekday.tuesday, Weekday.wednesday, Weekday.thursday, Weekday.friday, Weekday.saturday, Weekday.sunday]),Tracker(trackerId: UUID() , title: "fff", emoji: "🥒", color: ".brown", trackerType: Tracker.TrackerType.regular , day: [Weekday.monday, Weekday.tuesday, Weekday.wednesday, Weekday.thursday, Weekday.friday, Weekday.saturday, Weekday.sunday])]
     }
     
     private func addAllUI() {
-        addNewTracker()
-        addCurrentDateToNavBar()
+        addNewTrackerButton()
+        addDatePickerToNavBar()
         addSearchBarAndLabel()
-        addTableView()
-        if trackers.isEmpty {
-            setupPlaceholder()
-        }
+        addCollectionView()
+//        if trackers.isEmpty {
+//            setupPlaceholder()
+//        }
     }
-    private func addTableView() {
-        tableView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(tableView)
+    
+    private func addCollectionView() {
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(collectionView)
         
         NSLayoutConstraint.activate([
-            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -84),
-            tableView.topAnchor.constraint(equalTo: searchBar.bottomAnchor)
+            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
+            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0),
+            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -84),
+            collectionView.topAnchor.constraint(equalTo: searchBar.bottomAnchor)
         ])
     }
     
@@ -63,7 +82,7 @@ final class TrackersViewController: UIViewController {
         ])
     }
     
-    private func addNewTracker () {
+    private func addNewTrackerButton () {
         let plusButton = UIBarButtonItem(image: UIImage(systemName: "plus"),
                                          style: .plain,
                                          target: self,
@@ -72,25 +91,21 @@ final class TrackersViewController: UIViewController {
         navigationItem.leftBarButtonItem = plusButton
     }
     
-    private func addCurrentDateToNavBar() {
-        let button = UIButton(type: .system)
-        
-        button.setTitle(currentDate(), for: .normal)
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
-        button.setTitleColor(.black, for: .normal)
-        button.backgroundColor = #colorLiteral(red: 0.6823529412, green: 0.6862745098, blue: 0.7058823529, alpha: 1)
-        button.layer.cornerRadius = 8
-        
-        let dateBarItem = UIBarButtonItem(customView: button)
-        navigationItem.rightBarButtonItem = dateBarItem
-        
+    private func addDatePickerToNavBar() {
+        let datePicker = UIDatePicker()
+        datePicker.datePickerMode = .date
+        datePicker.preferredDatePickerStyle = .compact
+        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: datePicker)
+        datePicker.addTarget(self, action: #selector(datePickerValueChanged(_:)), for: .valueChanged)
+      
     }
     
-    private func currentDate() -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "dd.MM.yy"
-        formatter.locale = Locale(identifier: "ru_RU")
-        return formatter.string(from: Date())
+    @objc func datePickerValueChanged(_ sender: UIDatePicker) {
+        let selectedDate = sender.date
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "dd.MM.yyyy"
+        let formattedDate = dateFormatter.string(from: selectedDate)
+        print("Выбранная дата: \(formattedDate)")
     }
     
     @objc private func newTrackerButtonTapped () {
@@ -98,40 +113,69 @@ final class TrackersViewController: UIViewController {
     }
 }
 
-extension TrackersViewController: UITableViewDataSource {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return trackers.count
-
+extension TrackersViewController: UICollectionViewDataSource {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        trackers.count
     }
     
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-        cell.textLabel?.text = trackers[indexPath.row]
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "TrackerCell", for: indexPath) as! TrackerCollectionViewCell
+        cell.textLabel.text = trackers[indexPath.row].title
+        cell.backgroundImage.backgroundColor = colors[Int.random(in: 0..<colors.count)]
+        cell.emojiLabel.text = trackers[indexPath.row].emoji
+        cell.counterLabel.text = String(trackers[indexPath.row].counterDays)
+        cell.checkButton.backgroundColor = cell.backgroundImage.backgroundColor
+        cell.counterLabel.text = "1"
+        
         return cell
     }
+}
+
+extension TrackersViewController: UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let width = collectionView.bounds.width - 16 * 2 - 9
+        let cellWidth = width / 2
+        return CGSize(width: cellWidth, height: 148)
+    }
     
-    func setupPlaceholder() {
-        var placeholderLabel = UILabel()
-        var placeholderImage = UIImageView()
-        
-        placeholderImage.image = UIImage(resource: .placeholderTableView)
-        placeholderImage.contentMode = .scaleAspectFit
-        placeholderImage.translatesAutoresizingMaskIntoConstraints = false
-        
-        placeholderLabel.text = "Что будем отслеживать?"
-        placeholderLabel.font = UIFont.systemFont(ofSize: 12, weight: .medium)
-        placeholderLabel.textColor = .gray
-        placeholderLabel.textAlignment = .center
-        placeholderLabel.translatesAutoresizingMaskIntoConstraints = false
-        
-        view.addSubview(placeholderImage)
-        view.addSubview(placeholderLabel)
-        
-        NSLayoutConstraint.activate([
-            placeholderImage.centerXAnchor.constraint(equalTo: tableView.centerXAnchor),
-            placeholderImage.centerYAnchor.constraint(equalTo: tableView.centerYAnchor),
-            placeholderLabel.topAnchor.constraint(equalTo: placeholderImage.bottomAnchor, constant: 8),
-            placeholderLabel.centerXAnchor.constraint(equalTo: tableView.centerXAnchor)
-        ])
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        16
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+        9
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+        UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
     }
 }
+    
+//    func setupPlaceholder() {
+//        var placeholderLabel = UILabel()
+//        var placeholderImage = UIImageView()
+//        
+//        placeholderImage.image = UIImage(resource: .placeholderTableView)
+//        placeholderImage.contentMode = .scaleAspectFit
+//        placeholderImage.translatesAutoresizingMaskIntoConstraints = false
+//        
+//        placeholderLabel.text = "Что будем отслеживать?"
+//        placeholderLabel.font = UIFont.systemFont(ofSize: 12, weight: .medium)
+//        placeholderLabel.textColor = .gray
+//        placeholderLabel.textAlignment = .center
+//        placeholderLabel.translatesAutoresizingMaskIntoConstraints = false
+//        
+//        view.addSubview(placeholderImage)
+//        view.addSubview(placeholderLabel)
+//        
+//        NSLayoutConstraint.activate([
+//            placeholderImage.centerXAnchor.constraint(equalTo: tableView.centerXAnchor),
+//            placeholderImage.centerYAnchor.constraint(equalTo: tableView.centerYAnchor),
+//            placeholderLabel.topAnchor.constraint(equalTo: placeholderImage.bottomAnchor, constant: 8),
+//            placeholderLabel.centerXAnchor.constraint(equalTo: tableView.centerXAnchor)
+//        ])
+//    }

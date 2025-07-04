@@ -14,6 +14,7 @@ struct Tracker{
     let color: String
     let trackerType: TrackerType
     let day: [Weekday]
+    let counterDays: Int = 0
     
     enum TrackerType {
     case regular
