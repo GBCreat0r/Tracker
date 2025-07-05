@@ -10,13 +10,13 @@ import UIKit
 final class TrackersViewController: UIViewController {
     private var tittleLabel = UILabel()
     private var searchBar = UISearchBar()
-    //private var tableView = UITableView()
     private let collectionView: UICollectionView = {
         let collectionView = UICollectionView(
             frame: .zero,
             collectionViewLayout: UICollectionViewFlowLayout()
         )
         collectionView.register(TrackerCollectionViewCell.self, forCellWithReuseIdentifier: "TrackerCell")
+        collectionView.register(HeaderSupplementaryView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "Header")
         return collectionView
     }()
     
@@ -25,8 +25,8 @@ final class TrackersViewController: UIViewController {
         .cyan, .green, .orange,
         .red, .purple, .yellow
     ]
-    private var trackers: [Tracker] = []
-    private var trackersInCurrentDat: [Tracker] = []
+    private var categories: [TrackerCategory] = []
+    private var categoriesInDate: [TrackerCategory] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,7 +34,6 @@ final class TrackersViewController: UIViewController {
         collectionView.delegate = self
         collectionView.dataSource = self
         addAllUI()
-        trackers = [Tracker(trackerId: UUID() , title: "dfdfd", emoji: "😄", color: ".red", trackerType: Tracker.TrackerType.regular , day: [Weekday.monday, Weekday.tuesday, Weekday.wednesday, Weekday.thursday, Weekday.friday, Weekday.saturday, Weekday.sunday]), Tracker(trackerId: UUID() , title: "dfdfd", emoji: "🥒", color: ".black", trackerType: Tracker.TrackerType.regular , day: [Weekday.monday, Weekday.tuesday, Weekday.wednesday, Weekday.thursday, Weekday.friday, Weekday.saturday, Weekday.sunday]),Tracker(trackerId: UUID() , title: "fff", emoji: "🥒", color: ".brown", trackerType: Tracker.TrackerType.regular , day: [Weekday.monday, Weekday.tuesday, Weekday.wednesday, Weekday.thursday, Weekday.friday, Weekday.saturday, Weekday.sunday])]
     }
     
     private func addAllUI() {
@@ -42,9 +41,30 @@ final class TrackersViewController: UIViewController {
         addDatePickerToNavBar()
         addSearchBarAndLabel()
         addCollectionView()
-//        if trackers.isEmpty {
-//            setupPlaceholder()
-//        }
+        
+        if categories.isEmpty {
+            setupMockCategories()
+        }
+    }
+    
+    private func setupMockCategories() {
+        let healthTrackers = [
+            Tracker(trackerId: UUID(), title: "Пить воду", emoji: "💧", color: "blue",
+                   trackerType: .regular, day: Weekday.allCases, counterDays: 0),
+            Tracker(trackerId: UUID(), title: "Спать 8 часов", emoji: "😴", color: "green",
+                   trackerType: .regular, day: Weekday.allCases, counterDays: 4)
+        ]
+        
+        let workTrackers = [
+            Tracker(trackerId: UUID(), title: "Планерка", emoji: "📋", color: "red",
+                   trackerType: .regular, day: [.monday, .wednesday, .friday], counterDays: 1)
+        ]
+        
+        categories = [
+            TrackerCategory(title: "Здоровье", trackers: healthTrackers),
+            TrackerCategory(title: "Работа", trackers: workTrackers)
+        ]
+        categoriesInDate = categories
     }
     
     private func addCollectionView() {
@@ -55,7 +75,7 @@ final class TrackersViewController: UIViewController {
             collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
             collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0),
             collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -84),
-            collectionView.topAnchor.constraint(equalTo: searchBar.bottomAnchor)
+            collectionView.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: 12)
         ])
     }
     
@@ -114,20 +134,51 @@ final class TrackersViewController: UIViewController {
 }
 
 extension TrackersViewController: UICollectionViewDataSource {
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        trackers.count
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        categoriesInDate.count
     }
     
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+    func collectionView(_ collectionView: UICollectionView,
+                        numberOfItemsInSection section: Int) -> Int {
+        categoriesInDate[section].trackers.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView,
+                        cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "TrackerCell", for: indexPath) as! TrackerCollectionViewCell
-        cell.textLabel.text = trackers[indexPath.row].title
+        let tracker = categoriesInDate[indexPath.section].trackers[indexPath.row]
+        
+        cell.textLabel.text = tracker.title
         cell.backgroundImage.backgroundColor = colors[Int.random(in: 0..<colors.count)]
-        cell.emojiLabel.text = trackers[indexPath.row].emoji
-        cell.counterLabel.text = String(trackers[indexPath.row].counterDays)
+        cell.emojiLabel.text = tracker.emoji
+        
+        var counterText = ""
+        if tracker.counterDays == 1 {
+            counterText = "\(tracker.counterDays) день"
+        } else if tracker.counterDays <= 4 && tracker.counterDays != 0 {
+            counterText = "\(tracker.counterDays) дня"
+        } else {
+            counterText = "\(tracker.counterDays) дней"
+        }
+        
+        cell.counterLabel.text = counterText
         cell.checkButton.backgroundColor = cell.backgroundImage.backgroundColor
-        cell.counterLabel.text = "1"
         
         return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView,
+                        viewForSupplementaryElementOfKind kind: String,
+                        at indexPath: IndexPath) -> UICollectionReusableView {
+        guard kind == UICollectionView.elementKindSectionHeader else {
+            return UICollectionReusableView()
+        }
+        let header = collectionView.dequeueReusableSupplementaryView(
+            ofKind: kind,
+            withReuseIdentifier: "Header",
+            for: indexPath) as! HeaderSupplementaryView
+        header.titleLabel.text = categoriesInDate[indexPath.section].title
+        return header
     }
 }
 
@@ -146,12 +197,22 @@ extension TrackersViewController: UICollectionViewDelegateFlowLayout {
         16
     }
     
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
         9
     }
     
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        insetForSectionAt section: Int) -> UIEdgeInsets {
         UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
+    }
+    //TODO: посмотри методы отступа сверху и снизу и не забудь что изменил верхний кнст КВшки
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        referenceSizeForHeaderInSection section: Int) -> CGSize {
+        CGSize(width: 188, height: 20)
     }
 }
     
