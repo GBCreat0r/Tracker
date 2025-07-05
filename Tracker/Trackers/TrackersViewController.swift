@@ -7,7 +7,26 @@
 
 import UIKit
 
-final class TrackersViewController: UIViewController {
+final class TrackersViewController: UIViewController, TrackerCreateViewControllerDelegate {
+
+    func didCreateTracker(_ tracker: Tracker, categoryTitle: String) {
+        if let index = categories.firstIndex(where: { $0.title == categoryTitle }) {
+            // Добавляем в существующую категорию
+            var category = categories[index]
+            var trackers = category.trackers
+            trackers.append(tracker)
+            categories[index] = TrackerCategory(title: category.title, trackers: trackers)
+        } else {
+            // Создаем новую категорию
+            let newCategory = TrackerCategory(title: categoryTitle, trackers: [tracker])
+            categories.append(newCategory)
+        }
+        
+        // Обновляем отображение
+        categoriesInDate = categories
+        collectionView.reloadData()
+    }
+    
     private var tittleLabel = UILabel()
     private var searchBar = UISearchBar()
     private let collectionView: UICollectionView = {
@@ -129,7 +148,9 @@ final class TrackersViewController: UIViewController {
     }
     
     @objc private func newTrackerButtonTapped () {
-        
+        let createTrackerVS = CreateTrackerViewController()
+        createTrackerVS.delegate = self
+        present(UINavigationController(rootViewController: createTrackerVS), animated: true)
     }
 }
 
