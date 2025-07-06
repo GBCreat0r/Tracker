@@ -12,6 +12,7 @@ protocol TrackerCreateViewControllerDelegate: AnyObject {
 }
 
 final class CreateTrackerViewController: UIViewController {
+    
     weak var delegate: TrackerCreateViewControllerDelegate?
     
     private let scrollView: UIScrollView = {
@@ -48,15 +49,35 @@ final class CreateTrackerViewController: UIViewController {
         return field
     }()
     
+    private let categoryScheduleContainer: UIView = {
+        let view = UIView()
+        view.backgroundColor = #colorLiteral(red: 0.9019607843, green: 0.9098039216, blue: 0.9215686275, alpha: 0.3)
+        view.layer.cornerRadius = 16
+        view.clipsToBounds = true
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
     private let categoryButton: UIButton = {
         let button = UIButton()
         button.setTitle("Категория", for: .normal)
         button.setTitleColor(.black, for: .normal)
         button.contentHorizontalAlignment = .left
-        button.backgroundColor = #colorLiteral(red: 0.9019607843, green: 0.9098039216, blue: 0.9215686275, alpha: 0.3)
-        button.layer.cornerRadius = 16
         button.titleEdgeInsets = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 0)
         button.translatesAutoresizingMaskIntoConstraints = false
+        
+        let chevron = UIImageView(image: UIImage(systemName: "chevron.right"))
+        chevron.tintColor = .gray
+        chevron.translatesAutoresizingMaskIntoConstraints = false
+        button.addSubview(chevron)
+        
+        NSLayoutConstraint.activate([
+            chevron.trailingAnchor.constraint(equalTo: button.trailingAnchor, constant: -16),
+            chevron.centerYAnchor.constraint(equalTo: button.centerYAnchor),
+            chevron.widthAnchor.constraint(equalToConstant: 12),
+            chevron.heightAnchor.constraint(equalToConstant: 20)
+        ])
+        
         return button
     }()
     
@@ -65,12 +86,30 @@ final class CreateTrackerViewController: UIViewController {
         button.setTitle("Расписание", for: .normal)
         button.setTitleColor(.black, for: .normal)
         button.contentHorizontalAlignment = .left
-        button.backgroundColor = #colorLiteral(red: 0.9019607843, green: 0.9098039216, blue: 0.9215686275, alpha: 0.3)
-        button.layer.cornerRadius = 16
         button.titleEdgeInsets = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 0)
         button.translatesAutoresizingMaskIntoConstraints = false
+        
+        let chevron = UIImageView(image: UIImage(systemName: "chevron.right"))
+        chevron.tintColor = .gray
+        chevron.translatesAutoresizingMaskIntoConstraints = false
+        button.addSubview(chevron)
+        
+        NSLayoutConstraint.activate([
+            chevron.trailingAnchor.constraint(equalTo: button.trailingAnchor, constant: -16),
+            chevron.centerYAnchor.constraint(equalTo: button.centerYAnchor),
+            chevron.widthAnchor.constraint(equalToConstant: 12),
+            chevron.heightAnchor.constraint(equalToConstant: 20)
+        ])
+        
         return button
     }()
+    
+    private let separatorView: UIView = {
+            let view = UIView()
+            view.backgroundColor = UIColor(white: 0, alpha: 0.1)
+            view.translatesAutoresizingMaskIntoConstraints = false
+            return view
+        }()
     
     private let emojiCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -148,6 +187,7 @@ final class CreateTrackerViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .white
         addSubview()
+        setupCategoryScheduleViews()
         setupConstraints()
         
         textField.delegate = self
@@ -156,6 +196,32 @@ final class CreateTrackerViewController: UIViewController {
         colorCollectionView.delegate = self
         colorCollectionView.dataSource = self
     }
+//    private func setupCategoryScheduleViews() {
+//           categoryButton.addTarget(self, action: #selector(categoryButtonTapped), for: .touchUpInside)
+//           scheduleButton.addTarget(self, action: #selector(scheduleButtonTapped), for: .touchUpInside)
+//           
+//           categoryScheduleContainer.addSubview(categoryButton)
+//           categoryScheduleContainer.addSubview(separatorView)
+//           categoryScheduleContainer.addSubview(scheduleButton)
+//           
+//           NSLayoutConstraint.activate([
+//               categoryButton.topAnchor.constraint(equalTo: categoryScheduleContainer.topAnchor),
+//               categoryButton.leadingAnchor.constraint(equalTo: categoryScheduleContainer.leadingAnchor),
+//               categoryButton.trailingAnchor.constraint(equalTo: categoryScheduleContainer.trailingAnchor),
+//               categoryButton.heightAnchor.constraint(equalToConstant: 75),
+//               
+//               separatorView.topAnchor.constraint(equalTo: categoryButton.bottomAnchor),
+//               separatorView.leadingAnchor.constraint(equalTo: categoryScheduleContainer.leadingAnchor, constant: 16),
+//               separatorView.trailingAnchor.constraint(equalTo: categoryScheduleContainer.trailingAnchor, constant: -16),
+//               separatorView.heightAnchor.constraint(equalToConstant: 1),
+//               
+//               scheduleButton.topAnchor.constraint(equalTo: separatorView.bottomAnchor),
+//               scheduleButton.leadingAnchor.constraint(equalTo: categoryScheduleContainer.leadingAnchor),
+//               scheduleButton.trailingAnchor.constraint(equalTo: categoryScheduleContainer.trailingAnchor),
+//               scheduleButton.heightAnchor.constraint(equalToConstant: 75),
+//               scheduleButton.bottomAnchor.constraint(equalTo: categoryScheduleContainer.bottomAnchor)
+//           ])
+//       }
     
     private func addSubview() {
         view.addSubview(scrollView)
@@ -164,12 +230,14 @@ final class CreateTrackerViewController: UIViewController {
         contentView.addSubview(textField)
         contentView.addSubview(categoryButton)
         contentView.addSubview(scheduleButton)
-        contentView.addSubview(emojiCollectionView)
-        contentView.addSubview(colorCollectionView)
-        contentView.addSubview(cancelButton)
-        contentView.addSubview(createButton)
-        contentView.addSubview(emojiTitle)
-        contentView.addSubview(colorTitle)
+        
+        contentView.addSubview(categoryScheduleContainer)
+//        contentView.addSubview(emojiCollectionView)
+//        contentView.addSubview(colorCollectionView)
+//        contentView.addSubview(cancelButton)
+//        contentView.addSubview(createButton)
+//        contentView.addSubview(emojiTitle)
+//        contentView.addSubview(colorTitle)
     }
     
     private func setupConstraints() {
@@ -237,10 +305,18 @@ final class CreateTrackerViewController: UIViewController {
     }
     
     @objc private func scheduleButtonTapped() {
+        let vc = ScheduleSelectionViewController()
+        vc.selectedDays = selectedDays
+        vc.delegate = self
+        present(UINavigationController(rootViewController: vc), animated: true)
         
     }
     
     @objc private func categoryButtonTapped() {
+//        let vc = CategorySelectionViewController()
+//        vc.selectedDays = selectedDays
+//        vc.delegate = self
+//        present(UINavigationController(rootViewController: vc), animated: true)
         
     }
     
@@ -288,5 +364,22 @@ extension CreateTrackerViewController: UICollectionViewDataSource {
             cell.configure(with: colors[indexPath.row])
             return cell
         }
+    }
+    
+}
+
+extension CreateTrackerViewController: CategorySelectionDelegate {
+    func didSelectCategory(_ category: String) {
+        selectedCategory = category
+        updateCategoryButton(title: category)
+        updateCreateButtonState()
+    }
+}
+
+extension CreateTrackerViewController: ScheduleSelectionDelegate {
+    func didSelectDays(_ days: [Weekday]) {
+        selectedDays = days
+        updateScheduleButton()
+        updateCreateButtonState()
     }
 }
