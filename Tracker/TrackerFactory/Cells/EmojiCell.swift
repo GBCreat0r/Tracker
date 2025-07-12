@@ -7,7 +7,7 @@
 import UIKit
 
 final class EmojiCell: UICollectionViewCell {
-    private let emojiLabel: UILabel = {
+    let emojiLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 32)
         label.textAlignment = .center

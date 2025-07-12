@@ -23,7 +23,13 @@ struct Tracker: Codable {
 }
 
 enum Weekday: Int, CaseIterable, Codable {
-    case monday, tuesday, wednesday, thursday, friday, saturday, sunday
+    case monday = 2,
+         tuesday = 3,
+         wednesday = 4,
+         thursday = 5,
+         friday = 6,
+         saturday = 7,
+         sunday = 1
     
     var stringValue: String {
         switch self {
@@ -37,13 +43,13 @@ enum Weekday: Int, CaseIterable, Codable {
         }
     }
 }
-    
-    struct TrackerCategory: Codable {
-        let title: String
-        let trackers: [Tracker]
-    }
-    
-    struct TrackerRecoed{
-        let trackerId: UUID
-        let date: Date
-    }
+
+struct TrackerCategory: Codable {
+    let title: String
+    let trackers: [Tracker]
+}
+
+struct TrackerRecord{
+    let trackerId: UUID
+    let date: Date
+}

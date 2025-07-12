@@ -8,24 +8,6 @@
 import UIKit
 
 final class TrackersViewController: UIViewController, TrackerCreateViewControllerDelegate {
-
-    func didCreateTracker(_ tracker: Tracker, categoryTitle: String) {
-        if let index = categories.firstIndex(where: { $0.title == categoryTitle }) {
-            // Добавляем в существующую категорию
-            var category = categories[index]
-            var trackers = category.trackers
-            trackers.append(tracker)
-            categories[index] = TrackerCategory(title: category.title, trackers: trackers)
-        } else {
-            // Создаем новую категорию
-            let newCategory = TrackerCategory(title: categoryTitle, trackers: [tracker])
-            categories.append(newCategory)
-        }
-        
-        // Обновляем отображение
-        categoriesInDate = categories
-        collectionView.reloadData()
-    }
     
     private var tittleLabel = UILabel()
     private var searchBar = UISearchBar()
@@ -38,6 +20,8 @@ final class TrackersViewController: UIViewController, TrackerCreateViewControlle
         collectionView.register(HeaderSupplementaryView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "Header")
         return collectionView
     }()
+    private let placeholderLabel = UILabel()
+    private let placeholderImage = UIImageView()
     
     let colors: [UIColor] = [
         .black, .blue, .brown,
@@ -46,6 +30,7 @@ final class TrackersViewController: UIViewController, TrackerCreateViewControlle
     ]
     private var categories: [TrackerCategory] = []
     private var categoriesInDate: [TrackerCategory] = []
+    private var completedTracker: [TrackerRecord] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -53,6 +38,26 @@ final class TrackersViewController: UIViewController, TrackerCreateViewControlle
         collectionView.delegate = self
         collectionView.dataSource = self
         addAllUI()
+        
+        if categories.isEmpty {
+            setupPlaceholder()
+        }
+    }
+    
+    func didCreateTracker(_ tracker: Tracker, categoryTitle: String) {
+        if let index = categories.firstIndex(where: { $0.title == categoryTitle }) {
+            let category = categories[index]
+            var trackers = category.trackers
+            trackers.append(tracker)
+            categories[index] = TrackerCategory(title: category.title, trackers: trackers)
+        } else {
+            let newCategory = TrackerCategory(title: categoryTitle, trackers: [tracker])
+            categories.append(newCategory)
+        }
+        placeholderImage.removeFromSuperview()
+        placeholderImage.removeFromSuperview()
+        categoriesInDate = categories
+        collectionView.reloadData()
     }
     
     private func addAllUI() {
@@ -61,6 +66,7 @@ final class TrackersViewController: UIViewController, TrackerCreateViewControlle
         addSearchBarAndLabel()
         addCollectionView()
         
+        //Запуск МОК категорий
         if categories.isEmpty {
             setupMockCategories()
         }
@@ -69,14 +75,14 @@ final class TrackersViewController: UIViewController, TrackerCreateViewControlle
     private func setupMockCategories() {
         let healthTrackers = [
             Tracker(trackerId: UUID(), title: "Пить воду", emoji: "💧", color: "blue",
-                   trackerType: .regular, day: Weekday.allCases, counterDays: 0),
+                    trackerType: .regular, day: Weekday.allCases, counterDays: 0),
             Tracker(trackerId: UUID(), title: "Спать 8 часов", emoji: "😴", color: "green",
-                   trackerType: .regular, day: Weekday.allCases, counterDays: 4)
+                    trackerType: .regular, day: [.monday, .tuesday, .wednesday, .thursday, .sunday], counterDays: 4)
         ]
         
         let workTrackers = [
             Tracker(trackerId: UUID(), title: "Планерка", emoji: "📋", color: "red",
-                   trackerType: .regular, day: [.monday, .wednesday, .friday], counterDays: 1)
+                    trackerType: .regular, day: [.monday, .wednesday, .friday], counterDays: 1)
         ]
         
         categories = [
@@ -132,19 +138,129 @@ final class TrackersViewController: UIViewController, TrackerCreateViewControlle
     
     private func addDatePickerToNavBar() {
         let datePicker = UIDatePicker()
-        datePicker.datePickerMode = .date
         datePicker.preferredDatePickerStyle = .compact
+        datePicker.datePickerMode = .date
+        datePicker.calendar.firstWeekday = 2
+        datePicker.locale = Locale(identifier: "ru_RU")
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: datePicker)
         datePicker.addTarget(self, action: #selector(datePickerValueChanged(_:)), for: .valueChanged)
-      
+    }
+    
+    //TODO: верни его
+    func setupPlaceholder() {
+        
+        
+        placeholderImage.image = UIImage(resource: .placeholderTableView)
+        placeholderImage.contentMode = .scaleAspectFit
+        placeholderImage.translatesAutoresizingMaskIntoConstraints = false
+        
+        placeholderLabel.text = "Что будем отслеживать?"
+        placeholderLabel.font = UIFont.systemFont(ofSize: 12, weight: .medium)
+        placeholderLabel.textColor = .gray
+        placeholderLabel.textAlignment = .center
+        placeholderLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        view.addSubview(placeholderImage)
+        view.addSubview(placeholderLabel)
+        
+        NSLayoutConstraint.activate([
+            placeholderImage.centerXAnchor.constraint(equalTo: collectionView.centerXAnchor),
+            placeholderImage.centerYAnchor.constraint(equalTo: collectionView.centerYAnchor),
+            placeholderLabel.topAnchor.constraint(equalTo: placeholderImage.bottomAnchor, constant: 8),
+            placeholderLabel.centerXAnchor.constraint(equalTo: collectionView.centerXAnchor)
+        ])
+    }
+    
+    private func rightDayText(counter: Int) -> String {
+        var counterText = ""
+        if counter == 1 {
+            counterText = "\(counter) день"
+        } else if counter <= 4 && counter != 0 {
+            counterText = "\(counter) дня"
+        } else {
+            counterText = "\(counter) дней"
+        }
+        return counterText
+    }
+    
+    private func isTrackerCompleted(_ trackerId: UUID, date: Date) -> Bool {
+        completedTracker.contains { result in
+            result.trackerId == trackerId && Calendar.current.isDate(result.date, inSameDayAs: date)}
+    }
+    
+    private func addAndDeleteTrackerRecord(_ trackerId: UUID, date: Date) {
+        let calendar = Calendar.current
+        let normalizedDate = calendar.startOfDay(for: date)
+        
+        if let index = completedTracker.firstIndex (where: { result in
+            result.trackerId == trackerId && calendar.isDate(result.date, inSameDayAs: normalizedDate)
+        }) {
+            completedTracker.remove(at: index)
+        } else {
+            completedTracker.append(TrackerRecord(trackerId: trackerId, date: normalizedDate))
+        }
+    }
+    
+    private func completeDaysCounter(tracerId: UUID) -> Int {
+        completedTracker.filter { $0.trackerId == tracerId }.count
+    }
+    
+    //TODO: Надо разобраться с правильным отображением даты
+    //    private func formattedDateString(from date: Date) -> String {
+    //        let dateFormatter = DateFormatter()
+    //        dateFormatter.dateFormat = "dd MMMM yyyy"
+    //        return dateFormatter.string(from: date)
+    //    }
+    //
+    //    private func undateDateLabel() {
+    //        let dateString = formattedDateString(from: Date())
+    //        dateLabel.text = dateString
+    //    }
+    
+    @objc func completedTracker(_ sender: UIButton) {
+        guard let cell = sender.superview?.superview as? TrackerCollectionViewCell,
+              let indexPath = collectionView.indexPath(for: cell) else {
+            return
+        }
+        
+        let tracker = categoriesInDate[indexPath.section].trackers[indexPath.row]
+        let datePicker = navigationItem.rightBarButtonItem?.customView as? UIDatePicker
+        let selectedDate = datePicker?.date ?? Date()
+        
+        if selectedDate > Date() { return }
+        
+        addAndDeleteTrackerRecord(tracker.trackerId, date: selectedDate)
+        
+        let isCompleted = isTrackerCompleted(tracker.trackerId, date: selectedDate)
+        sender.setImage(UIImage(systemName: isCompleted ? "checkmark" : "plus"), for: .normal)
+        
+        let counter = completeDaysCounter(tracerId: tracker.trackerId)
+        let counterText = rightDayText(counter: counter)
+        cell.counterLabel.text = counterText
     }
     
     @objc func datePickerValueChanged(_ sender: UIDatePicker) {
         let selectedDate = sender.date
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "dd.MM.yyyy"
-        let formattedDate = dateFormatter.string(from: selectedDate)
-        print("Выбранная дата: \(formattedDate)")
+        let calendar = Calendar.current
+        let selectedWeekday = calendar.component(.weekday, from: selectedDate)
+        
+        categoriesInDate = categories.map { category in
+            let filteredTrackers = category.trackers.filter { tracker in
+                let trackerWeekdays = tracker.day.map { $0.rawValue }
+                return trackerWeekdays.contains(selectedWeekday)
+            }
+            return TrackerCategory(title: category.title, trackers: filteredTrackers)
+        }
+        
+        collectionView.reloadData()
+        
+        if !categoriesInDate.isEmpty {
+            collectionView.scrollToItem(
+                at: IndexPath(item: 0, section: 0),
+                at: .top,
+                animated: true
+            )
+        }
     }
     
     @objc private func newTrackerButtonTapped () {
@@ -173,17 +289,17 @@ extension TrackersViewController: UICollectionViewDataSource {
         cell.backgroundImage.backgroundColor = colors[Int.random(in: 0..<colors.count)]
         cell.emojiLabel.text = tracker.emoji
         
-        var counterText = ""
-        if tracker.counterDays == 1 {
-            counterText = "\(tracker.counterDays) день"
-        } else if tracker.counterDays <= 4 && tracker.counterDays != 0 {
-            counterText = "\(tracker.counterDays) дня"
-        } else {
-            counterText = "\(tracker.counterDays) дней"
-        }
+        let datePicker = navigationItem.rightBarButtonItem?.customView as? UIDatePicker
+        let selectedDate = datePicker?.date ?? Date()
+        let isCompleted = isTrackerCompleted(tracker.trackerId, date: selectedDate)
         
+        cell.checkButton.setImage(UIImage(systemName: isCompleted ? "checkmark" : "plus"), for: .normal)
+        
+        let counter = completeDaysCounter(tracerId: tracker.trackerId)
+        let counterText = rightDayText(counter: counter)
         cell.counterLabel.text = counterText
-        cell.checkButton.backgroundColor = cell.backgroundImage.backgroundColor
+        
+        cell.checkButton.addTarget(self, action: #selector (completedTracker(_:)), for: .touchUpInside)
         
         return cell
     }
@@ -236,28 +352,4 @@ extension TrackersViewController: UICollectionViewDelegateFlowLayout {
         CGSize(width: 188, height: 20)
     }
 }
-    
-//    func setupPlaceholder() {
-//        var placeholderLabel = UILabel()
-//        var placeholderImage = UIImageView()
-//        
-//        placeholderImage.image = UIImage(resource: .placeholderTableView)
-//        placeholderImage.contentMode = .scaleAspectFit
-//        placeholderImage.translatesAutoresizingMaskIntoConstraints = false
-//        
-//        placeholderLabel.text = "Что будем отслеживать?"
-//        placeholderLabel.font = UIFont.systemFont(ofSize: 12, weight: .medium)
-//        placeholderLabel.textColor = .gray
-//        placeholderLabel.textAlignment = .center
-//        placeholderLabel.translatesAutoresizingMaskIntoConstraints = false
-//        
-//        view.addSubview(placeholderImage)
-//        view.addSubview(placeholderLabel)
-//        
-//        NSLayoutConstraint.activate([
-//            placeholderImage.centerXAnchor.constraint(equalTo: tableView.centerXAnchor),
-//            placeholderImage.centerYAnchor.constraint(equalTo: tableView.centerYAnchor),
-//            placeholderLabel.topAnchor.constraint(equalTo: placeholderImage.bottomAnchor, constant: 8),
-//            placeholderLabel.centerXAnchor.constraint(equalTo: tableView.centerXAnchor)
-//        ])
-//    }
+

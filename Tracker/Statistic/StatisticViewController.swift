@@ -15,7 +15,6 @@ final class StatisticViewController: UIViewController {
         view.backgroundColor = #colorLiteral(red: 0.5725490451, green: 0, blue: 0.2313725501, alpha: 1)
         fakeLabel = UILabel()
         guard let fakeLabel else { print("Pen") ; return}
-        //fakeLabel.font = UIFont.systemFont(ofSize: 13, weight: .regular)
         fakeLabel.text = "Stat"
         fakeLabel.textColor = .white
         fakeLabel.translatesAutoresizingMaskIntoConstraints = false

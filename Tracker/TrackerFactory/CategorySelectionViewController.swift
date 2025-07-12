@@ -35,6 +35,15 @@ final class CategorySelectionViewController: UIViewController {
         return label
     }()
     
+    private let placeholderImage: UIImageView = {
+        let placeholderImage = UIImageView()
+        placeholderImage.image = UIImage(resource: .placeholderTableView)
+        placeholderImage.contentMode = .scaleAspectFit
+        placeholderImage.translatesAutoresizingMaskIntoConstraints = false
+        
+        return placeholderImage
+    }()
+    
     private let addButton: UIButton = {
         let button = UIButton()
         button.setTitle("Добавить категорию", for: .normal)
@@ -61,6 +70,7 @@ final class CategorySelectionViewController: UIViewController {
         addButton.addTarget(self, action: #selector(addButtonTapped), for: .touchUpInside)
         
         view.addSubview(tableView)
+        view.addSubview(placeholderImage)
         view.addSubview(placeholderLabel)
         view.addSubview(addButton)
         
@@ -76,8 +86,10 @@ final class CategorySelectionViewController: UIViewController {
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             tableView.bottomAnchor.constraint(equalTo: addButton.topAnchor, constant: -24),
             
+            placeholderImage.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            placeholderImage.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            placeholderLabel.topAnchor.constraint(equalTo: placeholderImage.bottomAnchor, constant: 8),
             placeholderLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            placeholderLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor),
             
             addButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             addButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
@@ -87,6 +99,7 @@ final class CategorySelectionViewController: UIViewController {
     }
     
     private func updatePlaceholder() {
+        placeholderImage.isHidden = !categories.isEmpty
         placeholderLabel.isHidden = !categories.isEmpty
     }
     
@@ -118,7 +131,7 @@ extension CategorySelectionViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
         cell.textLabel?.text = categories[indexPath.row]
-        cell.backgroundColor = #colorLiteral(red: 0.9019607843, green: 0.9098039216, blue: 0.9215686275, alpha: 0.3)
+        cell.backgroundColor = UIColor(red: 0.902, green: 0.91, blue: 0.922, alpha: 0.3)
         return cell
     }
 }

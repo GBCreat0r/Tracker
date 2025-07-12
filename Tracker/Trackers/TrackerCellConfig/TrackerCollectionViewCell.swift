@@ -56,7 +56,6 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
         checkButton.layer.cornerRadius = 17
         checkButton.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(checkButton)
-
     }
     
     private func setupConstraints() {
@@ -81,8 +80,7 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
             checkButton.heightAnchor.constraint(equalToConstant: 34),
             
             counterLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12),
-            counterLabel.centerYAnchor.constraint(equalTo: checkButton.centerYAnchor),
-            
+            counterLabel.centerYAnchor.constraint(equalTo: checkButton.centerYAnchor),   
         ])
     }
 }
