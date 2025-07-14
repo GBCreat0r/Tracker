@@ -58,6 +58,11 @@
 			path = TrackerUITests;
 			sourceTree = "<group>";
 		};
+		CD8296AA2E2544CF00B8BD4C /* LanguageSettings */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = LanguageSettings;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -88,6 +93,7 @@
 		CD03E1FC2E09554A0043B7AB = {
 			isa = PBXGroup;
 			children = (
+				CD8296AA2E2544CF00B8BD4C /* LanguageSettings */,
 				CD03E2072E09554A0043B7AB /* Tracker */,
 				CD03E21E2E09554C0043B7AB /* TrackerTests */,
 				CD03E2282E09554C0043B7AB /* TrackerUITests */,
@@ -122,6 +128,7 @@
 			);
 			fileSystemSynchronizedGroups = (
 				CD03E2072E09554A0043B7AB /* Tracker */,
+				CD8296AA2E2544CF00B8BD4C /* LanguageSettings */,
 			);
 			name = Tracker;
 			packageProductDependencies = (

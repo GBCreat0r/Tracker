@@ -171,15 +171,7 @@ final class TrackersViewController: UIViewController, TrackerCreateViewControlle
     }
     
     private func rightDayText(counter: Int) -> String {
-        var counterText = ""
-        if counter == 1 {
-            counterText = "\(counter) день"
-        } else if counter <= 4 && counter != 0 {
-            counterText = "\(counter) дня"
-        } else {
-            counterText = "\(counter) дней"
-        }
-        return counterText
+        String(format: NSLocalizedString("day_count", comment: ""), counter)
     }
     
     private func isTrackerCompleted(_ trackerId: UUID, date: Date) -> Bool {
