@@ -11,7 +11,7 @@ struct Tracker: Codable {
     let trackerId: UUID
     let title: String
     let emoji: String
-    let color: String
+    let colorIndex: Int
     let trackerType: TrackerType
     let day: [Weekday]
     let counterDays: Int

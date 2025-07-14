@@ -96,7 +96,6 @@ final class CreateTrackerViewController: UIViewController {
         label.text = "Emoji"
         label.font = UIFont.systemFont(ofSize: 19, weight: .bold)
         label.translatesAutoresizingMaskIntoConstraints = false
-        //label.layer.cornerRadius = 16
         return label
     }()
     
@@ -111,11 +110,11 @@ final class CreateTrackerViewController: UIViewController {
     private let cancelButton: UIButton = {
         let button = UIButton()
         button.setTitle("Отменить", for: .normal)
-        button.setTitleColor(.red, for: .normal)
+        button.setTitleColor(#colorLiteral(red: 0.9607843137, green: 0.4196078431, blue: 0.4235294118, alpha: 1), for: .normal)
         button.backgroundColor = .white
         button.layer.cornerRadius = 16
         button.layer.borderWidth = 1
-        button.layer.borderColor = UIColor.red.cgColor
+        button.layer.borderColor = #colorLiteral(red: 0.9607843137, green: 0.4196078431, blue: 0.4235294118, alpha: 1)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
@@ -124,7 +123,7 @@ final class CreateTrackerViewController: UIViewController {
         let button = UIButton()
         button.setTitle("Создать", for: .normal)
         button.setTitleColor(.white, for: .normal)
-        button.backgroundColor = .gray
+        button.backgroundColor = #colorLiteral(red: 0.6823529412, green: 0.6862745098, blue: 0.7058823529, alpha: 1)
         button.layer.cornerRadius = 16
         button.isEnabled = false
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -142,9 +141,11 @@ final class CreateTrackerViewController: UIViewController {
     private var selectedColor: UIColor?
     private var selectedCategory: String?
     private var selectedDays: [Weekday] = []
+    private var existingCategories: [String] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        navigationController?.isNavigationBarHidden = true
         view.backgroundColor = .white
         setupUI()
         setupActions()
@@ -156,6 +157,10 @@ final class CreateTrackerViewController: UIViewController {
         colorCollectionView.dataSource = self
     }
     
+    func setExistingCategories(_ categories: [String]) {
+        existingCategories = categories
+    }
+        
     private static func createSelectionButton(title: String) -> UIButton {
         let button = UIButton()
         button.setTitle(title, for: .normal)
@@ -245,28 +250,30 @@ final class CreateTrackerViewController: UIViewController {
             emojiTitle.topAnchor.constraint(equalTo: categoryScheduleContainer.bottomAnchor, constant: 32),
             
             emojiCollectionView.topAnchor.constraint(equalTo: emojiTitle.bottomAnchor, constant: 24),
-            emojiCollectionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            emojiCollectionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            emojiCollectionView.heightAnchor.constraint(equalToConstant: 200),
+            emojiCollectionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 13),
+            emojiCollectionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -13),
+            emojiCollectionView.heightAnchor.constraint(equalToConstant: 156),
             
             colorTitle.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 28),
             colorTitle.topAnchor.constraint(equalTo: emojiCollectionView.bottomAnchor, constant: 24),
             
             colorCollectionView.topAnchor.constraint(equalTo: colorTitle.bottomAnchor, constant: 24),
-            colorCollectionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            colorCollectionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            colorCollectionView.heightAnchor.constraint(equalToConstant: 200),
+            colorCollectionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 13),
+            colorCollectionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -13),
+            colorCollectionView.heightAnchor.constraint(equalToConstant: 156),
             
             cancelButton.topAnchor.constraint(equalTo: colorCollectionView.bottomAnchor, constant: 40),
             cancelButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
-            cancelButton.widthAnchor.constraint(equalToConstant: 161),
-            cancelButton.heightAnchor.constraint(equalToConstant: 60),
             cancelButton.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -40),
+            cancelButton.heightAnchor.constraint(equalToConstant: 60),
             
             createButton.topAnchor.constraint(equalTo: colorCollectionView.bottomAnchor, constant: 40),
             createButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
-            createButton.widthAnchor.constraint(equalToConstant: 161),
-            createButton.heightAnchor.constraint(equalToConstant: 60)
+
+            createButton.heightAnchor.constraint(equalToConstant: 60),
+            
+            cancelButton.trailingAnchor.constraint(equalTo: createButton.leadingAnchor, constant: -8),
+            cancelButton.widthAnchor.constraint(equalTo: createButton.widthAnchor)
         ])
     }
     
@@ -283,7 +290,7 @@ final class CreateTrackerViewController: UIViewController {
         selectedColor != nil
         
         createButton.isEnabled = isEnabled
-        createButton.backgroundColor = isEnabled ? .black : .gray
+        createButton.backgroundColor = isEnabled ? #colorLiteral(red: 0.1019607843, green: 0.1058823529, blue: 0.1333333333, alpha: 1) : #colorLiteral(red: 0.6823529412, green: 0.6862745098, blue: 0.7058823529, alpha: 1)
     }
     
     private func updateCategoryButton(title: String?) {
@@ -330,25 +337,25 @@ final class CreateTrackerViewController: UIViewController {
     @objc private func createButtonTapped() {
         guard let title = textField.text, !title.isEmpty,
               let emoji = selectedEmoji,
-              let color = selectedColor,
+              let colorIndex = colors.firstIndex(where: { $0 == selectedColor}),
               let category = selectedCategory else { return }
         
         let newTracker = Tracker(
             trackerId: UUID(),
             title: title,
             emoji: emoji,
-            color: color.toHex(),
+            colorIndex: colorIndex,
             trackerType: selectedDays.count == Weekday.allCases.count ? .regular : .irregular,
             day: selectedDays,
             counterDays: 0
         )
-        
         delegate?.didCreateTracker(newTracker, categoryTitle: category)
         dismiss(animated: true)
     }
     
     @objc private func categoryButtonTapped() {
         let vc = CategorySelectionViewController()
+        vc.setCategories(existingCategories)
         vc.delegate = self
         present(UINavigationController(rootViewController: vc), animated: true)
     }
@@ -382,7 +389,8 @@ extension CreateTrackerViewController: UICollectionViewDataSource {
         }
     }
     
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+    func collectionView(_ collectionView: UICollectionView,
+                        cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if collectionView == emojiCollectionView {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "EmojiCell", for: indexPath) as! EmojiCell
             cell.configure(with: emojis[indexPath.row])
@@ -401,13 +409,14 @@ extension CreateTrackerViewController: UICollectionViewDelegate {
         if collectionView == emojiCollectionView {
             selectedEmoji = emojis[indexPath.row]
             let cell = collectionView.cellForItem(at: indexPath) as? EmojiCell
-            cell?.emojiLabel.backgroundColor = #colorLiteral(red: 0.9019607843, green: 0.9098039216, blue: 0.9215686275, alpha: 0.5)
+            cell?.backgroundColor = #colorLiteral(red: 0.9019607843, green: 0.9098039216, blue: 0.9215686275, alpha: 0.5)
+            cell?.layer.cornerRadius = 16
         } else {
             selectedColor = colors[indexPath.row]
             let cell = collectionView.cellForItem(at: indexPath) as? ColorCell
-            guard let color = cell?.colorView.backgroundColor else { return }
-            oldColor = color
-            cell?.colorView.backgroundColor = #colorLiteral(red: 0.9019607843, green: 0.9098039216, blue: 0.9215686275, alpha: 0.5)
+            cell?.layer.cornerRadius = 10.4
+            cell?.layer.borderWidth = 3
+            cell?.layer.borderColor = cell?.colorView.backgroundColor?.cgColor.copy(alpha: 0.5)
         }
         updateCreateButtonState()
     }
@@ -417,11 +426,11 @@ extension CreateTrackerViewController: UICollectionViewDelegate {
         if collectionView == emojiCollectionView {
             selectedEmoji = emojis[indexPath.row]
             let cell = collectionView.cellForItem(at: indexPath) as? EmojiCell
-            cell?.emojiLabel.backgroundColor = .none
+            cell?.backgroundColor = .none
         } else {
             selectedColor = colors[indexPath.row]
             let cell = collectionView.cellForItem(at: indexPath) as? ColorCell
-            cell?.colorView.backgroundColor = oldColor
+            cell?.layer.borderWidth = 0
         }
         updateCreateButtonState()
     }
@@ -437,13 +446,13 @@ extension CreateTrackerViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView,
                         layout collectionViewLayout: UICollectionViewLayout,
                         minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
-        5
+        0
     }
     
     func collectionView(_ collectionView: UICollectionView,
                         layout collectionViewLayout: UICollectionViewLayout,
                         minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        0
+        5
     }
     
     func collectionView(
@@ -452,8 +461,12 @@ extension CreateTrackerViewController: UICollectionViewDelegateFlowLayout {
         insetForSectionAt section: Int
     ) -> UIEdgeInsets {
         let cellsPerRow: CGFloat = 6
-        let totalCellWidth = 52 * cellsPerRow
-        let leftInset = (collectionView.frame.width - totalCellWidth) / 2
+        let cellWidth: CGFloat = 52
+        let spacing: CGFloat = 5
+        
+        let totalWidth = (cellWidth * cellsPerRow) + (spacing * (cellsPerRow - 1))
+        let leftInset = (collectionView.frame.width - totalWidth) / 2
+        
         return UIEdgeInsets(top: 0, left: leftInset, bottom: 0, right: leftInset)
     }
 }
@@ -471,17 +484,5 @@ extension CreateTrackerViewController: ScheduleSelectionDelegate {
         selectedDays = days
         updateScheduleButton()
         updateCreateButtonState()
-    }
-}
-
-extension UIColor {
-    func toHex() -> String {
-        guard let components = cgColor.components, components.count >= 3 else {
-            return "#000000"
-        }
-        let r = Float(components[0])
-        let g = Float(components[1])
-        let b = Float(components[2])
-        return String(format: "#%02lX%02lX%02lX", lroundf(r * 255), lroundf(g * 255), lroundf(b * 255))
     }
 }

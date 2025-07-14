@@ -16,7 +16,7 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        setupViews()
+        setupUI()
         setupConstraints()
     }
     
@@ -25,7 +25,7 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func setupViews() {
+    func setupUI() {
         backgroundImage.backgroundColor = .blue
         backgroundImage.translatesAutoresizingMaskIntoConstraints = false
         backgroundImage.layer.cornerRadius = 16
@@ -51,6 +51,7 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
         contentView.addSubview(counterLabel)
         
         checkButton.setImage(UIImage(resource: .plus), for: .normal)
+        checkButton.tintColor = .white
         checkButton.backgroundColor = .blue
         checkButton.clipsToBounds = true
         checkButton.layer.cornerRadius = 17

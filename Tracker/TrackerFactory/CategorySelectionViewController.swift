@@ -98,6 +98,12 @@ final class CategorySelectionViewController: UIViewController {
         ])
     }
     
+    func setCategories(_ categories: [String]) {
+        self.categories = categories
+        tableView.reloadData()
+        updatePlaceholder()
+    }
+    
     private func updatePlaceholder() {
         placeholderImage.isHidden = !categories.isEmpty
         placeholderLabel.isHidden = !categories.isEmpty
