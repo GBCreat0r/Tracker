@@ -6,10 +6,29 @@
 //
 
 import UIKit
+import CoreData
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
+    
+    lazy var persistentContainer: NSPersistentContainer = {
+        let container = NSPersistentContainer(name: "Store")
+        container.loadPersistentStores(completionHandler: { storeDescription, error in
+            if let error = error as NSError? {
+                fatalError("Unresolved error \(error), \(error.userInfo)")
+            }
+        })
+        return container
+    }()
+    
+    static var shared: SceneDelegate {
+        return UIApplication.shared.connectedScenes.first?.delegate as! SceneDelegate
+    }
+    
+    var context: NSManagedObjectContext {
+        persistentContainer.viewContext
+    }
 
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
@@ -17,8 +36,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         window = UIWindow(windowScene: windowScene)
         
-        let trackersVC = TrackersViewController()
-        let statisticsVS = StatisticViewController()
+        let trackersVC = TrackersViewController(context: persistentContainer.viewContext)
+        let statisticsVS = StatisticViewController(context: persistentContainer.viewContext)
         
         let navController = UINavigationController(rootViewController: trackersVC)
         
@@ -30,8 +49,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         window?.rootViewController = tabBarController
         window?.makeKeyAndVisible()
-
-        
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
