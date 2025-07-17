@@ -12,14 +12,14 @@ struct Tracker: Codable {
     let title: String
     let emoji: String
     let colorIndex: Int
-    let trackerType: TrackerType
+    //let trackerType: TrackerType
     let day: [Weekday]
     let counterDays: Int
     
-    enum TrackerType: String, Codable {
-        case regular
-        case irregular
-    }
+//    enum TrackerType: String, Codable {
+//        case regular
+//        case irregular
+//    }
 }
 
 enum Weekday: Int, CaseIterable, Codable {

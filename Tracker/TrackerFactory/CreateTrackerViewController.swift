@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import CoreData
 
 protocol TrackerCreateViewControllerDelegate: AnyObject {
     func didCreateTracker(_ tracker: Tracker, categoryTitle: String)
@@ -13,6 +14,17 @@ protocol TrackerCreateViewControllerDelegate: AnyObject {
 
 final class CreateTrackerViewController: UIViewController {
     weak var delegate: TrackerCreateViewControllerDelegate?
+    
+//    let context: NSManagedObjectContext
+//    
+//    init(context: NSManagedObjectContext) {
+//        self.context = context
+//        super.init(nibName: nil, bundle: nil)
+//    }
+//    
+//    required init?(coder: NSCoder) {
+//        fatalError("init(coder:) has not been implemented")
+//    }
     
     private let scrollView: UIScrollView = {
         let scrollView = UIScrollView()
@@ -345,7 +357,7 @@ final class CreateTrackerViewController: UIViewController {
             title: title,
             emoji: emoji,
             colorIndex: colorIndex,
-            trackerType: selectedDays.count == Weekday.allCases.count ? .regular : .irregular,
+            //trackerType: selectedDays.count == Weekday.allCases.count ? .regular : .irregular,
             day: selectedDays,
             counterDays: 0
         )

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="23605" systemVersion="24B91" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
+    <entity name="TrackerCategoryCoreData" representedClassName="TrackerCategoryCoreData" syncable="YES" codeGenerationType="class">
+        <attribute name="title" attributeType="String"/>
+        <attribute name="trackers" attributeType="Transformable"/>
+        <relationship name="trackerss" toMany="YES" deletionRule="Nullify" destinationEntity="TrackerCoreData"/>
+    </entity>
+    <entity name="TrackerCoreData" representedClassName="TrackerCoreData" syncable="YES" codeGenerationType="class">
+        <attribute name="colorIndex" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="counterDays" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="emoji" attributeType="String"/>
+        <attribute name="title" attributeType="String"/>
+        <attribute name="trackerID" attributeType="UUID" usesScalarValueType="NO"/>
+        <relationship name="category" maxCount="1" deletionRule="Nullify" destinationEntity="TrackerCoreData" inverseName="category" inverseEntity="TrackerCoreData"/>
+        <relationship name="records" toMany="YES" deletionRule="Nullify" destinationEntity="TrackerRecordCoreData" inverseName="tracker" inverseEntity="TrackerRecordCoreData"/>
+        <relationship name="weekdays" toMany="YES" deletionRule="Nullify" destinationEntity="WeekdayCoreData" inverseName="tracker" inverseEntity="WeekdayCoreData"/>
+    </entity>
+    <entity name="TrackerRecordCoreData" representedClassName="TrackerRecordCoreData" syncable="YES" codeGenerationType="class">
+        <attribute name="date" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="trackerID" attributeType="UUID" usesScalarValueType="NO"/>
+        <relationship name="tracker" maxCount="1" deletionRule="Nullify" destinationEntity="TrackerCoreData" inverseName="records" inverseEntity="TrackerCoreData"/>
+    </entity>
+    <entity name="WeekdayCoreData" representedClassName="WeekdayCoreData" syncable="YES" codeGenerationType="class">
+        <attribute name="days" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <relationship name="tracker" maxCount="1" deletionRule="Nullify" destinationEntity="TrackerCoreData" inverseName="weekdays" inverseEntity="TrackerCoreData"/>
+    </entity>
+</model>

@@ -6,8 +6,19 @@
 //
 
 import UIKit
+import CoreData
 
 final class TrackersViewController: UIViewController, TrackerCreateViewControllerDelegate {
+    let context: NSManagedObjectContext
+    
+    init(context: NSManagedObjectContext) {
+        self.context = context
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     private var tittleLabel = UILabel()
     private var searchBar = UISearchBar()
@@ -73,15 +84,12 @@ final class TrackersViewController: UIViewController, TrackerCreateViewControlle
     
     private func setupMockCategories() {
         let healthTrackers = [
-            Tracker(trackerId: UUID(), title: "Пить воду", emoji: "💧", colorIndex: 3,
-                    trackerType: .regular, day: Weekday.allCases, counterDays: 0),
-            Tracker(trackerId: UUID(), title: "Спать 8 часов", emoji: "😴", colorIndex: 2,
-                    trackerType: .regular, day: [.monday, .tuesday, .wednesday, .thursday, .sunday], counterDays: 4)
+            Tracker(trackerId: UUID(), title: "Пить воду", emoji: "💧", colorIndex: 3, day: Weekday.allCases, counterDays: 0),
+            Tracker(trackerId: UUID(), title: "Спать 8 часов", emoji: "😴", colorIndex: 2, day: [.monday, .tuesday, .wednesday, .thursday, .sunday], counterDays: 4)
         ]
         
         let workTrackers = [
-            Tracker(trackerId: UUID(), title: "Планерка", emoji: "📋", colorIndex: 7,
-                    trackerType: .regular, day: [.monday, .wednesday, .friday], counterDays: 1)
+            Tracker(trackerId: UUID(), title: "Планерка", emoji: "📋", colorIndex: 7, day: [.monday, .wednesday, .friday], counterDays: 1)
         ]
         
         categories = [

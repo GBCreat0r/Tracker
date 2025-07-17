@@ -6,8 +6,20 @@
 //
 
 import UIKit
+import CoreData
 
 final class StatisticViewController: UIViewController {
+    let context: NSManagedObjectContext
+    
+    init(context: NSManagedObjectContext) {
+        self.context = context
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     private var fakeLabel: UILabel?
     
     override func viewDidLoad() {
