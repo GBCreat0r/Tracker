@@ -36,8 +36,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         window = UIWindow(windowScene: windowScene)
         
-        let trackersVC = TrackersViewController(context: persistentContainer.viewContext)
-        let statisticsVS = StatisticViewController(context: persistentContainer.viewContext)
+        let trackersVC = TrackersViewController()
+        let statisticsVS = StatisticViewController()
         
         let navController = UINavigationController(rootViewController: trackersVC)
         

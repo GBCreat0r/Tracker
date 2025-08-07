@@ -6,20 +6,8 @@
 //
 
 import UIKit
-import CoreData
 
 final class TrackersViewController: UIViewController, TrackerCreateViewControllerDelegate {
-    let context: NSManagedObjectContext
-    
-    init(context: NSManagedObjectContext) {
-        self.context = context
-        super.init(nibName: nil, bundle: nil)
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
     private var tittleLabel = UILabel()
     private var searchBar = UISearchBar()
     private let collectionView: UICollectionView = {
@@ -33,11 +21,7 @@ final class TrackersViewController: UIViewController, TrackerCreateViewControlle
     }()
     private let placeholderLabel = UILabel()
     private let placeholderImage = UIImageView()
-    
-    private let colors: [UIColor] = [
-        #colorLiteral(red: 0.9921568627, green: 0.2980392157, blue: 0.2862745098, alpha: 1),#colorLiteral(red: 1, green: 0.5333333333, blue: 0.1176470588, alpha: 1),#colorLiteral(red: 0, green: 0.4823529412, blue: 0.9803921569, alpha: 1),#colorLiteral(red: 0.431372549, green: 0.2666666667, blue: 0.9960784314, alpha: 1),#colorLiteral(red: 0.2, green: 0.8117647059, blue: 0.4117647059, alpha: 1),#colorLiteral(red: 0.9019607843, green: 0.4274509804, blue: 0.831372549, alpha: 1),#colorLiteral(red: 0.9764705882, green: 0.831372549, blue: 0.831372549, alpha: 1),#colorLiteral(red: 0.2039215686, green: 0.6549019608, blue: 0.9960784314, alpha: 1),#colorLiteral(red: 0.2745098039, green: 0.9019607843, blue: 0.6156862745, alpha: 1),#colorLiteral(red: 0.2078431373, green: 0.2039215686, blue: 0.4862745098, alpha: 1),#colorLiteral(red: 1, green: 0.4039215686, blue: 0.3019607843, alpha: 1),#colorLiteral(red: 1, green: 0.6, blue: 0.8, alpha: 1),#colorLiteral(red: 0.9647058824, green: 0.768627451, blue: 0.5450980392, alpha: 1),#colorLiteral(red: 0.4745098039, green: 0.5803921569, blue: 0.9607843137, alpha: 1),#colorLiteral(red: 0.5137254902, green: 0.1725490196, blue: 0.9450980392, alpha: 1),#colorLiteral(red: 0.6784313725, green: 0.337254902, blue: 0.8549019608, alpha: 1),#colorLiteral(red: 0.5529411765, green: 0.4470588235, blue: 0.9019607843, alpha: 1),#colorLiteral(red: 0.1843137255, green: 0.8156862745, blue: 0.3450980392, alpha: 1)
-    ]
-    
+      
     private var categories: [TrackerCategory] = []
     private var categoriesInDate: [TrackerCategory] = []
     private var completedTracker: [TrackerRecord] = []
@@ -287,7 +271,7 @@ extension TrackersViewController: UICollectionViewDataSource {
         let tracker = categoriesInDate[indexPath.section].trackers[indexPath.row]
         
         cell.textLabel.text = tracker.title
-        cell.backgroundImage.backgroundColor = colors[tracker.colorIndex]
+        cell.backgroundImage.backgroundColor = Colors.colors[tracker.colorIndex]
         cell.emojiLabel.text = tracker.emoji
         
         let datePicker = navigationItem.rightBarButtonItem?.customView as? UIDatePicker
@@ -295,7 +279,7 @@ extension TrackersViewController: UICollectionViewDataSource {
         let isCompleted = isTrackerCompleted(tracker.trackerId, date: selectedDate)
         
         cell.checkButton.setImage(UIImage(systemName: isCompleted ? "checkmark" : "plus"), for: .normal)
-        cell.checkButton.backgroundColor = colors[tracker.colorIndex]
+        cell.checkButton.backgroundColor = Colors.colors[tracker.colorIndex]
         
         let counter = completeDaysCounter(tracerId: tracker.trackerId)
         let counterText = rightDayText(counter: counter)
@@ -354,4 +338,3 @@ extension TrackersViewController: UICollectionViewDelegateFlowLayout {
         CGSize(width: 188, height: 20)
     }
 }
-
