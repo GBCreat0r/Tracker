@@ -14,7 +14,7 @@ protocol TrackerCreateViewControllerDelegate: AnyObject {
 final class CreateTrackerViewController: UIViewController {
     weak var delegate: TrackerCreateViewControllerDelegate?
     
-
+    
     private let scrollView: UIScrollView = {
         let scrollView = UIScrollView()
         scrollView.translatesAutoresizingMaskIntoConstraints = false
@@ -157,7 +157,7 @@ final class CreateTrackerViewController: UIViewController {
     func setExistingCategories(_ categories: [String]) {
         existingCategories = categories
     }
-        
+    
     private static func createSelectionButton(title: String) -> UIButton {
         let button = UIButton()
         button.setTitle(title, for: .normal)
@@ -266,7 +266,7 @@ final class CreateTrackerViewController: UIViewController {
             
             createButton.topAnchor.constraint(equalTo: colorCollectionView.bottomAnchor, constant: 40),
             createButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
-
+            
             createButton.heightAnchor.constraint(equalToConstant: 60),
             
             cancelButton.trailingAnchor.constraint(equalTo: createButton.leadingAnchor, constant: -8),
@@ -342,7 +342,6 @@ final class CreateTrackerViewController: UIViewController {
             title: title,
             emoji: emoji,
             colorIndex: colorIndex,
-            //trackerType: selectedDays.count == Weekday.allCases.count ? .regular : .irregular,
             day: selectedDays,
             counterDays: 0
         )

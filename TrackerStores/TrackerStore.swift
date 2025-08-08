@@ -1,64 +1,107 @@
 
 
 import CoreData
+protocol TrackerStoreDelegate: AnyObject {
+    func didUpdateTrackers()
+}
 
 final class TrackerStore: NSObject {
     private let context: NSManagedObjectContext
+    weak var delegate: TrackerStoreDelegate?
     
-    init(context: NSManagedObjectContext = SceneDelegate.shared.context) {
+    private lazy var fetchedResultsController: NSFetchedResultsController<TrackerCoreData> = {
+        let request = TrackerCoreData.fetchRequest()
+        request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
+        
+        let controller = NSFetchedResultsController(
+            fetchRequest: request,
+            managedObjectContext: context,
+            sectionNameKeyPath: nil,
+            cacheName: nil
+        )
+        controller.delegate = self
+        return controller
+    }()
+    
+    init(context: NSManagedObjectContext) {
         self.context = context
+        super.init()
+        try? fetchedResultsController.performFetch()
     }
     
-    func addTracker(_ tracker: Tracker, to categoryTitle: String) throws {
-        let trackerEntity = NSEntityDescription.insertNewObject(
-            forEntityName: "Tracker",
-            into: context
-        )
+    func addTracker(tracker: Tracker, categoryTitle: String) throws {
+        let trackerCD = TrackerCoreData(context: context)
+        trackerCD.color = Int64(tracker.colorIndex)
+        trackerCD.id = tracker.trackerId
+        trackerCD.title = tracker.title
+        trackerCD.emoji = tracker.emoji
+        trackerCD.counterRecords = Int64(tracker.counterDays)
+        // Тут я сделал конкатенацию числовых значений недели в строку
+        trackerCD.weekday = tracker.day.map { String($0.rawValue) }.joined()
         
-        trackerEntity.setValue(tracker.trackerId, forKey: "trackerId")
-        trackerEntity.setValue(tracker.title, forKey: "title")
-        trackerEntity.setValue(tracker.emoji, forKey: "emoji")
-        trackerEntity.setValue(Int64(tracker.colorIndex), forKey: "color")
-        trackerEntity.setValue(Int64(tracker.counterDays), forKey: "counter")
-        trackerEntity.setValue(tracker.day.map { String($0.rawValue) }.joined(), forKey: "weekday")
+        let categoryRequest: NSFetchRequest<TrackerCategoryCoreData> = TrackerCategoryCoreData.fetchRequest()
+        categoryRequest.predicate = NSPredicate(format: "title == %@", categoryTitle)
         
-        let category = try TrackerCategoryStore(context: context).fetchOrCreateCategory(title: categoryTitle)
-        trackerEntity.setValue(category, forKey: "category")
+        if let existingCategory = try? context.fetch(categoryRequest).first {
+            trackerCD.category = existingCategory
+        } else {
+            let newCategory = TrackerCategoryCoreData(context: context)
+            newCategory.id = UUID()
+            newCategory.title = categoryTitle
+            trackerCD.category = newCategory
+        }
         
         try context.save()
+        print("TrackerStore: Трекер сохранён")
     }
     
     func fetchTrackers() throws -> [Tracker] {
-        let request = NSFetchRequest<NSManagedObject>(entityName: "Tracker")
-        let trackers = try context.fetch(request)
+        let request = TrackerCoreData.fetchRequest()
+        let sortDescriptor = NSSortDescriptor(key: "title", ascending: true)
+        request.sortDescriptors = [sortDescriptor]
         
-        return trackers.compactMap { entity in
-            guard let trackerId = entity.value(forKey: "trackerId") as? UUID,
-                  let title = entity.value(forKey: "title") as? String,
-                  let emoji = entity.value(forKey: "emoji") as? String,
-                  let daysString = entity.value(forKey: "weekday") as? String else {
-                return nil
+        let trackersCD = try context.fetch(request)
+        
+        return trackersCD.compactMap { data in
+            guard let id = data.id,
+                  let title = data.title,
+                  let emoji = data.emoji,
+                  let days = data.weekday
+            else { return nil }
+            
+            let weekdays: [Weekday] = days.compactMap { char in
+                guard let rawValue = Int(String(char)),
+                      let weekday = Weekday(rawValue: rawValue) else {
+                    return nil
+                }
+                return weekday
             }
             
             return Tracker(
-                trackerId: trackerId,
+                trackerId: id,
                 title: title,
                 emoji: emoji,
-                colorIndex: Int(entity.value(forKey: "color") as? Int64 ?? 0),
-                day: daysString.compactMap { Weekday(rawValue: Int(String($0)) ?? 0) },
-                counterDays: Int(entity.value(forKey: "counter") as? Int64 ?? 0)
+                colorIndex: Int(data.color),
+                day: weekdays,
+                counterDays: Int(data.counterRecords)
             )
         }
     }
     
-    func deleteTracker(_ trackerId: UUID) throws {
-        let request = NSFetchRequest<NSManagedObject>(entityName: "Tracker")
-        request.predicate = NSPredicate(format: "trackerId == %@", trackerId as CVarArg)
+    func deleteTracker(_ id: UUID) throws {
+        let request = TrackerCoreData.fetchRequest()
+        request.predicate = NSPredicate(format: "id == %@", id.uuidString)
         
         if let tracker = try context.fetch(request).first {
             context.delete(tracker)
             try context.save()
+            print("TrackerStore: Трекер удалённ")
         }
     }
 }
 
+extension TrackerStore: NSFetchedResultsControllerDelegate {
+    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+        delegate?.didUpdateTrackers()
+    }
+}

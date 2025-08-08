@@ -8,6 +8,10 @@
 import UIKit
 
 final class TrackersViewController: UIViewController, TrackerCreateViewControllerDelegate {
+    private let trackerStore = TrackerStore(context: CoreDataManager.shared.context)
+    private let categoryStore = TrackerCategoryStore(context: CoreDataManager.shared.context)
+    private let recordStore = TrackerRecordStore(context: CoreDataManager.shared.context)
+    
     private var tittleLabel = UILabel()
     private var searchBar = UISearchBar()
     private let collectionView: UICollectionView = {
@@ -15,16 +19,20 @@ final class TrackersViewController: UIViewController, TrackerCreateViewControlle
             frame: .zero,
             collectionViewLayout: UICollectionViewFlowLayout()
         )
-        collectionView.register(TrackerCollectionViewCell.self, forCellWithReuseIdentifier: "TrackerCell")
-        collectionView.register(HeaderSupplementaryView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "Header")
+        collectionView.register(TrackerCollectionViewCell.self,
+                                forCellWithReuseIdentifier: "TrackerCell")
+        collectionView.register(HeaderSupplementaryView.self,
+                                forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
+                                withReuseIdentifier: "Header")
         return collectionView
     }()
     private let placeholderLabel = UILabel()
     private let placeholderImage = UIImageView()
-      
+    
     private var categories: [TrackerCategory] = []
     private var categoriesInDate: [TrackerCategory] = []
-    private var completedTracker: [TrackerRecord] = []
+    private var completedTrackers: [TrackerRecord] = []
+    private var currentDate = Date()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -32,26 +40,42 @@ final class TrackersViewController: UIViewController, TrackerCreateViewControlle
         collectionView.delegate = self
         collectionView.dataSource = self
         addAllUI()
+        loadData()
         
         if categories.isEmpty {
             setupPlaceholder()
         }
     }
     
-    func didCreateTracker(_ tracker: Tracker, categoryTitle: String) {
-        if let index = categories.firstIndex(where: { $0.title == categoryTitle }) {
-            let category = categories[index]
-            var trackers = category.trackers
-            trackers.append(tracker)
-            categories[index] = TrackerCategory(title: category.title, trackers: trackers)
-        } else {
-            let newCategory = TrackerCategory(title: categoryTitle, trackers: [tracker])
-            categories.append(newCategory)
+    private func loadData() {
+        do {
+            self.categories = try categoryStore.fetchCategories()
+            self.completedTrackers = try recordStore.fetchRecords()
+            filterTrackers(for: currentDate)
+        } catch {
+            print("Ошибка загрузки данных: \(error.localizedDescription)")
         }
-        placeholderImage.removeFromSuperview()
-        placeholderLabel.removeFromSuperview()
-        categoriesInDate = categories
+    }
+    
+    private func filterTrackers(for date: Date) {
+        let weekday = Calendar.current.component(.weekday, from: date)
+        let day = Weekday(rawValue: weekday) ?? .monday
+        
+        categoriesInDate = categories.compactMap { category in
+            let filteredTrackers = category.trackers.filter { $0.day.contains(day) }
+            return filteredTrackers.isEmpty ? nil : TrackerCategory(title: category.title, trackers: filteredTrackers)
+        }
         collectionView.reloadData()
+        updatePlaceholderVisibility()
+    }
+    
+    func didCreateTracker(_ tracker: Tracker, categoryTitle: String) {
+        do {
+            try trackerStore.addTracker(tracker: tracker, categoryTitle: categoryTitle)
+            loadData()
+        } catch {
+            print("Ошибка сохранения трекера: \(error.localizedDescription)")
+        }
     }
     
     private func addAllUI() {
@@ -59,28 +83,6 @@ final class TrackersViewController: UIViewController, TrackerCreateViewControlle
         addDatePickerToNavBar()
         addSearchBarAndLabel()
         addCollectionView()
-        
-        //Запуск МОК категорий
-        if categories.isEmpty {
-            setupMockCategories()
-        }
-    }
-    
-    private func setupMockCategories() {
-        let healthTrackers = [
-            Tracker(trackerId: UUID(), title: "Пить воду", emoji: "💧", colorIndex: 3, day: Weekday.allCases, counterDays: 0),
-            Tracker(trackerId: UUID(), title: "Спать 8 часов", emoji: "😴", colorIndex: 2, day: [.monday, .tuesday, .wednesday, .thursday, .sunday], counterDays: 4)
-        ]
-        
-        let workTrackers = [
-            Tracker(trackerId: UUID(), title: "Планерка", emoji: "📋", colorIndex: 7, day: [.monday, .wednesday, .friday], counterDays: 1)
-        ]
-        
-        categories = [
-            TrackerCategory(title: "Здоровье", trackers: healthTrackers),
-            TrackerCategory(title: "Работа", trackers: workTrackers)
-        ]
-        categoriesInDate = categories
     }
     
     private func addCollectionView() {
@@ -137,9 +139,7 @@ final class TrackersViewController: UIViewController, TrackerCreateViewControlle
         datePicker.addTarget(self, action: #selector(datePickerValueChanged(_:)), for: .valueChanged)
     }
     
-    //TODO: верни его
     func setupPlaceholder() {
-        
         
         placeholderImage.image = UIImage(resource: .placeholderTableView)
         placeholderImage.contentMode = .scaleAspectFit
@@ -162,43 +162,43 @@ final class TrackersViewController: UIViewController, TrackerCreateViewControlle
         ])
     }
     
+    private func updatePlaceholderVisibility() {
+        let isEmpty = categoriesInDate.isEmpty
+        placeholderLabel.isHidden = !isEmpty
+        placeholderImage.isHidden = !isEmpty
+    }
+    
     private func rightDayText(counter: Int) -> String {
         String(format: NSLocalizedString("day_count", comment: ""), counter)
     }
     
     private func isTrackerCompleted(_ trackerId: UUID, date: Date) -> Bool {
-        completedTracker.contains { result in
-            result.trackerId == trackerId && Calendar.current.isDate(result.date, inSameDayAs: date)}
+        completedTrackers.contains { record in
+            record.trackerId == trackerId && Calendar.current.isDate(record.date, inSameDayAs: date)
+        }
     }
     
     private func addAndDeleteTrackerRecord(_ trackerId: UUID, date: Date) {
-        let calendar = Calendar.current
-        let normalizedDate = calendar.startOfDay(for: date)
-        
-        if let index = completedTracker.firstIndex (where: { result in
-            result.trackerId == trackerId && calendar.isDate(result.date, inSameDayAs: normalizedDate)
-        }) {
-            completedTracker.remove(at: index)
-        } else {
-            completedTracker.append(TrackerRecord(trackerId: trackerId, date: normalizedDate))
+        do {
+            if isTrackerCompleted(trackerId, date: date) {
+                try recordStore.deleteRecord(trackerID: trackerId, date: date)
+            } else {
+                try recordStore.addRecord(trackerID: trackerId, date: date)
+            }
+            completedTrackers = try recordStore.fetchRecords()
+        } catch {
+            print("Ошибка изменения записи: \(error.localizedDescription)")
         }
     }
     
     private func completeDaysCounter(tracerId: UUID) -> Int {
-        completedTracker.filter { $0.trackerId == tracerId }.count
+        do {
+            return try recordStore.countRecords(for: tracerId)
+        } catch {
+            print("Failed to count records: \(error)")
+            return 0
+        }
     }
-    
-    //TODO: Надо разобраться с правильным отображением даты
-    //    private func formattedDateString(from date: Date) -> String {
-    //        let dateFormatter = DateFormatter()
-    //        dateFormatter.dateFormat = "dd MMMM yyyy"
-    //        return dateFormatter.string(from: date)
-    //    }
-    //
-    //    private func undateDateLabel() {
-    //        let dateString = formattedDateString(from: Date())
-    //        dateLabel.text = dateString
-    //    }
     
     @objc func completedTracker(_ sender: UIButton) {
         guard let cell = sender.superview?.superview as? TrackerCollectionViewCell,
@@ -223,27 +223,8 @@ final class TrackersViewController: UIViewController, TrackerCreateViewControlle
     }
     
     @objc func datePickerValueChanged(_ sender: UIDatePicker) {
-        let selectedDate = sender.date
-        let calendar = Calendar.current
-        let selectedWeekday = calendar.component(.weekday, from: selectedDate)
-        
-        categoriesInDate = categories.map { category in
-            let filteredTrackers = category.trackers.filter { tracker in
-                let trackerWeekdays = tracker.day.map { $0.rawValue }
-                return trackerWeekdays.contains(selectedWeekday)
-            }
-            return TrackerCategory(title: category.title, trackers: filteredTrackers)
-        }
-        
-        collectionView.reloadData()
-        
-        if !categoriesInDate.isEmpty {
-            collectionView.scrollToItem(
-                at: IndexPath(item: 0, section: 0),
-                at: .top,
-                animated: true
-            )
-        }
+        currentDate = sender.date
+        filterTrackers(for: currentDate)
     }
     
     @objc private func newTrackerButtonTapped () {
@@ -338,3 +319,21 @@ extension TrackersViewController: UICollectionViewDelegateFlowLayout {
         CGSize(width: 188, height: 20)
     }
 }
+
+
+//    private func setupMockCategories() {
+//        let healthTrackers = [
+//            Tracker(trackerId: UUID(), title: "Пить воду", emoji: "💧", colorIndex: 3, day: Weekday.allCases, counterDays: 0),
+//            Tracker(trackerId: UUID(), title: "Спать 8 часов", emoji: "😴", colorIndex: 2, day: [.monday, .tuesday, .wednesday, .thursday, .sunday], counterDays: 4)
+//        ]
+//
+//        let workTrackers = [
+//            Tracker(trackerId: UUID(), title: "Планерка", emoji: "📋", colorIndex: 7, day: [.monday, .wednesday, .friday], counterDays: 1)
+//        ]
+//
+//        categories = [
+//            TrackerCategory(title: "Здоровье", trackers: healthTrackers),
+//            TrackerCategory(title: "Работа", trackers: workTrackers)
+//        ]
+//        categoriesInDate = categories
+//    }
