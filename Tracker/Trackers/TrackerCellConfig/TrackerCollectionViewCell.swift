@@ -30,7 +30,7 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
         backgroundImage.translatesAutoresizingMaskIntoConstraints = false
         backgroundImage.layer.cornerRadius = 16
         contentView.addSubview(backgroundImage)
-
+        
         emojiLabel.backgroundColor = UIColor.white.withAlphaComponent(0.3)
         emojiLabel.textAlignment = .center
         emojiLabel.clipsToBounds = true
@@ -38,13 +38,13 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
         emojiLabel.text = "🥒"
         emojiLabel.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(emojiLabel)
-
+        
         textLabel.font = UIFont.systemFont(ofSize: 12, weight: .medium)
         textLabel.textColor = .white
         textLabel.text = "Trackers"
         textLabel.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(textLabel)
-
+        
         counterLabel.textColor = .black
         counterLabel.font = .systemFont(ofSize: 12, weight: .semibold)
         counterLabel.translatesAutoresizingMaskIntoConstraints = false
