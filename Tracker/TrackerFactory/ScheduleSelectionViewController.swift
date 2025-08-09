@@ -131,7 +131,6 @@ extension ScheduleSelectionViewController: UITableViewDataSource {
         if indexPath.row < Weekday.allCases.count - 1 {
             cell.addSeparator()
         }
-        
         return cell
     }
 }
@@ -155,4 +154,3 @@ extension ScheduleSelectionViewController: UITableViewDelegate {
         tableView.reloadRows(at: [indexPath], with: .none)
     }
 }
-
