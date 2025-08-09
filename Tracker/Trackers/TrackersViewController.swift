@@ -49,8 +49,8 @@ final class TrackersViewController: UIViewController, TrackerCreateViewControlle
     
     private func loadData() {
         do {
-            self.categories = try categoryStore.fetchCategories()
-            self.completedTrackers = try recordStore.fetchRecords()
+            categories = try categoryStore.fetchCategories()
+            completedTrackers = try recordStore.fetchRecords()
             filterTrackers(for: currentDate)
         } catch {
             print("Ошибка загрузки данных: \(error.localizedDescription)")

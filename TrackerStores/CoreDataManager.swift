@@ -8,7 +8,9 @@
 import CoreData
 
 final class CoreDataManager {
-    static var shared = CoreDataManager()
+    static let shared = CoreDataManager()
+    
+    private init() {}
     
     private lazy var persistentContainer: NSPersistentContainer = {
         let container = NSPersistentContainer(name: "TrackerCD")
