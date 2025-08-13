@@ -19,8 +19,10 @@ final class AddCategoryViewController: UIViewController {
         field.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: field.frame.height))
         field.leftViewMode = .always
         field.clearButtonMode = .whileEditing
+        field.returnKeyType = .done
         field.translatesAutoresizingMaskIntoConstraints = false
         field.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
+        field.delegate = self
         return field
     }()
     
@@ -78,5 +80,12 @@ final class AddCategoryViewController: UIViewController {
     
     @objc private func cancelButtonTapped() {
         dismiss(animated: true)
+    }
+}
+
+extension AddCategoryViewController: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder() 
+        return true
     }
 }
