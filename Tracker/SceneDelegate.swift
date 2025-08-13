@@ -26,7 +26,7 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let tabBarController = UITabBarController()
         tabBarController.viewControllers = [navController, statisticsVS]
         
-        window?.rootViewController = TrackerOnboarding()
+        window?.rootViewController = tabBarController
         window?.makeKeyAndVisible()
     }
 }

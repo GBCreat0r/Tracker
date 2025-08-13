@@ -350,10 +350,17 @@ final class CreateTrackerViewController: UIViewController {
     }
     
     @objc private func categoryButtonTapped() {
-        let vc = CategorySelectionViewController()
-        vc.setCategories(existingCategories)
-        vc.delegate = self
-        present(UINavigationController(rootViewController: vc), animated: true)
+        let model = CategorySelectionModel()
+        let viewModel = CategorySelectionViewModel(model: model)
+        
+        let onCategorySelected: (String) -> Void = { [weak self] category in
+            self?.selectedCategory = category
+            self?.updateCategoryButton(title: category)
+            self?.updateCreateButtonState()
+        }
+        
+        let view = CategorySelectionView(viewModel: viewModel, onCategorySelected: onCategorySelected)
+        present(UINavigationController(rootViewController: view), animated: true)
     }
     
     @objc private func scheduleButtonTapped() {
@@ -464,14 +471,6 @@ extension CreateTrackerViewController: UICollectionViewDelegateFlowLayout {
         let leftInset = (collectionView.frame.width - totalWidth) / 2
         
         return UIEdgeInsets(top: 0, left: leftInset, bottom: 0, right: leftInset)
-    }
-}
-
-extension CreateTrackerViewController: CategorySelectionDelegate {
-    func didSelectCategory(_ category: String) {
-        selectedCategory = category
-        updateCategoryButton(title: category)
-        updateCreateButtonState()
     }
 }
 

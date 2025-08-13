@@ -8,6 +8,8 @@
 import UIKit
 
 final class TrackerOnboarding: UIPageViewController {
+    static let onboardingKey = "onboardingCompleted"
+    
     lazy var pages: [UIViewController] = {
         let firstPage = createPage(
             imageName: "firstBackground",
@@ -101,7 +103,8 @@ final class TrackerOnboarding: UIPageViewController {
     }
     
     @objc private func buttonTapped() {
-        print("Button tapped!")
+        UserDefaults.standard.set(true, forKey: TrackerOnboarding.onboardingKey)
+        dismiss(animated: true)
     }
 }
 

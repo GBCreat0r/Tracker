@@ -45,6 +45,21 @@ final class TrackersViewController: UIViewController, TrackerCreateViewControlle
         if categories.isEmpty {
             setupPlaceholder()
         }
+        
+        checkOnboardingStatus()
+    }
+    
+    private func checkOnboardingStatus() {
+        let onboardingCompleted = UserDefaults.standard.bool(forKey: TrackerOnboarding.onboardingKey)
+        if !onboardingCompleted {
+            showOnboarding()
+        }
+    }
+    
+    private func showOnboarding() {
+        let onboardingVC = TrackerOnboarding(transitionStyle: .scroll, navigationOrientation: .horizontal)
+        onboardingVC.modalPresentationStyle = .fullScreen
+        present(onboardingVC, animated: true)
     }
     
     private func loadData() {
