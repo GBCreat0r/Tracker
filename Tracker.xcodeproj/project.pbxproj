@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		CD82980E2E4B5A4200B8BD4C /* TrackerOnboarding.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD82980D2E4B5A4200B8BD4C /* TrackerOnboarding.swift */; };
+		CD8298642E4E3B5600B8BD4C /* ForReviewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD8298632E4E3B5600B8BD4C /* ForReviewer.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -32,6 +33,7 @@
 		CD03E21B2E09554C0043B7AB /* TrackerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TrackerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		CD03E2252E09554C0043B7AB /* TrackerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TrackerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		CD82980D2E4B5A4200B8BD4C /* TrackerOnboarding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackerOnboarding.swift; sourceTree = "<group>"; };
+		CD8298632E4E3B5600B8BD4C /* ForReviewer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForReviewer.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -108,6 +110,7 @@
 		CD03E1FC2E09554A0043B7AB = {
 			isa = PBXGroup;
 			children = (
+				CD8298632E4E3B5600B8BD4C /* ForReviewer.swift */,
 				CD82980D2E4B5A4200B8BD4C /* TrackerOnboarding.swift */,
 				CD8297262E293F1600B8BD4C /* TrackerStores */,
 				CD8296FB2E27D0D800B8BD4C /* TrackerCoreData */,
@@ -277,6 +280,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CD82980E2E4B5A4200B8BD4C /* TrackerOnboarding.swift in Sources */,
+				CD8298642E4E3B5600B8BD4C /* ForReviewer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
