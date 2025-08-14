@@ -45,12 +45,27 @@ final class TrackersViewController: UIViewController, TrackerCreateViewControlle
         if categories.isEmpty {
             setupPlaceholder()
         }
+        
+        checkOnboardingStatus()
+    }
+    
+    private func checkOnboardingStatus() {
+        let onboardingCompleted = UserDefaults.standard.bool(forKey: TrackerOnboarding.onboardingKey)
+        if !onboardingCompleted {
+            showOnboarding()
+        }
+    }
+    
+    private func showOnboarding() {
+        let onboardingVC = TrackerOnboarding(transitionStyle: .scroll, navigationOrientation: .horizontal)
+        onboardingVC.modalPresentationStyle = .fullScreen
+        present(onboardingVC, animated: true)
     }
     
     private func loadData() {
         do {
-            self.categories = try categoryStore.fetchCategories()
-            self.completedTrackers = try recordStore.fetchRecords()
+            categories = try categoryStore.fetchCategories()
+            completedTrackers = try recordStore.fetchRecords()
             filterTrackers(for: currentDate)
         } catch {
             print("Ошибка загрузки данных: \(error.localizedDescription)")
