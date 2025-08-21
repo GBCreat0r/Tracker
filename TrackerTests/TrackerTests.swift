@@ -13,7 +13,6 @@ import SnapshotTesting
 final class TrackersViewControllerSnapshotTests: XCTestCase {
     
     func testMainScreenSnapshot() {
-        // Given
         let VC = TrackersViewController()
         let navigationController = UINavigationController(rootViewController: VC)
         
@@ -23,7 +22,21 @@ final class TrackersViewControllerSnapshotTests: XCTestCase {
             matching: navigationController,
             as: .image(on: .iPhone13),
             named: "main_screen",
-            record: false // Измените на true для записи нового скриншота
+            record: false
         )
     }
+    
+    func testMainScreenDarkTheme() {
+           let VC = TrackersViewController()
+           let navigationController = UINavigationController(rootViewController: VC)
+           
+           VC.loadViewIfNeeded()
+
+           assertSnapshot(
+               matching: navigationController,
+               as: .image(on: .iPhone13, traits: .init(userInterfaceStyle: .dark)),
+               named: "main_screen_dark",
+               record: false
+           )
+       }
 }
