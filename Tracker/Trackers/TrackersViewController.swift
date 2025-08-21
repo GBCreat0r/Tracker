@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import AppMetricaCore
 
 final class TrackersViewController: UIViewController, TrackerCreateViewControllerDelegate {
     private let trackerStore = TrackerStore(context: CoreDataManager.shared.context)
@@ -149,11 +150,10 @@ final class TrackersViewController: UIViewController, TrackerCreateViewControlle
         tittleLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(tittleLabel)
         
-//        searchTextField.addTarget(self, action: #selector(searchBarTextDidChange), for: .editingChanged)
-//        view.addSubview(searchTextField)
+
         searchTextField.placeholder = NSLocalizedString("search_placeholder", comment: "Плейсхолдер поиска")
-        searchTextField.backgroundColor = Colors.searchFieldBackground // ← Фон поиска
-        searchTextField.textColor = Colors.textPrimary // ← Цвет текста поиска
+        searchTextField.backgroundColor = Colors.searchFieldBackground
+        searchTextField.textColor = Colors.textPrimary
         searchTextField.attributedPlaceholder = NSAttributedString(
             string: NSLocalizedString("search_placeholder", comment: "Плейсхолдер поиска"),
             attributes: [NSAttributedString.Key.foregroundColor: Colors.placeholder]

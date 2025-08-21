@@ -6,12 +6,14 @@
 //
 
 import UIKit
+import AppMetricaCore
 
 final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
     
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = scene as? UIWindowScene else { return }
+        initializeAppMetrica()
         
         window = UIWindow(windowScene: windowScene)
         
@@ -30,6 +32,11 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         window?.rootViewController = tabBarController
         window?.makeKeyAndVisible()
+    }
+    
+    private func initializeAppMetrica() {
+        let configuration = AppMetricaConfiguration(apiKey: "b3c96578-26c1-47a2-a733-f883d41a21ea")
+        AppMetrica.activate(with: configuration!)
     }
 }
 
