@@ -10,3 +10,17 @@
 "search_placeholder" = "Поиск";
 "empty_state_message" = "Что будем отслеживать?";
 "statistics_title" = "Статистика";
+"edit" = "Редактировать";
+"delete" = "Удалить";
+"delete_tracker_title" = "Удаление трекера";
+"delete_tracker_message" = "Уверены что хотите удалить трекер?";
+"cancel" = "Отмена";
+"new_habit" = "Новая привычка";
+"enter_tracker_name" = "Введите название трекера";
+"category" = "Категория";
+"schedule" = "Расписание";
+"emoji" = "Emoji";
+"color" = "Цвет";
+"create" = "Создать";
+"save" = "Сохранить";
+"edit_habit" = "Редактирование привычки";

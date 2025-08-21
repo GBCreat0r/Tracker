@@ -15,9 +15,9 @@ final class TrackersViewController: UIViewController, TrackerCreateViewControlle
     private var tittleLabel = UILabel()
     private let searchTextField = {
         let textField = UISearchTextField()
-            textField.placeholder = NSLocalizedString("search_placeholder", comment: "Плейсхолдер поиска")
-            textField.translatesAutoresizingMaskIntoConstraints = false
-            return textField
+        textField.placeholder = NSLocalizedString("search_placeholder", comment: "Плейсхолдер поиска")
+        textField.translatesAutoresizingMaskIntoConstraints = false
+        return textField
     }()
     private let collectionView: UICollectionView = {
         let collectionView = UICollectionView(
@@ -98,6 +98,15 @@ final class TrackersViewController: UIViewController, TrackerCreateViewControlle
         }
     }
     
+    func didUpdateTracker(_ tracker: Tracker, categoryTitle: String) {
+            do {
+                try trackerStore.updateTracker(tracker, categoryTitle: categoryTitle)
+                loadData()
+            } catch {
+                print("Ошибка обновления трекера: \(error.localizedDescription)")
+            }
+        }
+    
     private func addAllUI() {
         addNewTrackerButton()
         addDatePickerToNavBar()
@@ -126,7 +135,7 @@ final class TrackersViewController: UIViewController, TrackerCreateViewControlle
         view.addSubview(tittleLabel)
         
         searchTextField.addTarget(self, action: #selector(searchBarTextDidChange), for: .editingChanged)
-           view.addSubview(searchTextField)
+        view.addSubview(searchTextField)
         
         NSLayoutConstraint.activate([
             tittleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
@@ -157,7 +166,7 @@ final class TrackersViewController: UIViewController, TrackerCreateViewControlle
         datePicker.addTarget(self, action: #selector(datePickerValueChanged(_:)), for: .valueChanged)
     }
     
-    func setupPlaceholder() {
+    private func setupPlaceholder() {
         
         placeholderImage.image = UIImage(resource: .placeholderTableView)
         placeholderImage.contentMode = .scaleAspectFit
@@ -215,6 +224,69 @@ final class TrackersViewController: UIViewController, TrackerCreateViewControlle
         } catch {
             print("Failed to count records: \(error)")
             return 0
+        }
+    }
+    
+    private func createContextMenu(for indexPath: IndexPath) -> UIMenu {
+        let tracker = categoriesInDate[indexPath.section].trackers[indexPath.row]
+        
+        let editAction = UIAction(
+            title: NSLocalizedString("edit", comment: "Редактировать")
+        ) { [weak self] _ in
+            self?.editTracker(tracker, at: indexPath)
+        }
+        
+        let deleteAction = UIAction(
+            title: NSLocalizedString("delete", comment: "Удалить"),
+            attributes: .destructive
+        ) { [weak self] _ in
+            self?.confirmDeleteTracker(tracker, at: indexPath)
+        }
+        
+        return UIMenu(title: "", children: [editAction, deleteAction])
+    }
+    
+    private func editTracker(_ tracker: Tracker, at indexPath: IndexPath) {
+        let categoryTitle = categoriesInDate[indexPath.section].title
+        
+        let createTrackerVC = CreateTrackerViewController()
+        createTrackerVC.setMode(.edit(tracker: tracker, categoryTitle: categoryTitle))
+        createTrackerVC.setExistingCategories(categories.map { $0.title })
+        createTrackerVC.delegate = self
+        present(UINavigationController(rootViewController: createTrackerVC), animated: true)
+    }
+    
+    private func confirmDeleteTracker(_ tracker: Tracker, at indexPath: IndexPath) {
+        let alert = UIAlertController(
+            title: NSLocalizedString("delete_tracker_title", comment: "Удаление трекера"),
+            message: NSLocalizedString("delete_tracker_message", comment: "Уверены, что хотите удалить этот трекер?"),
+            preferredStyle: .actionSheet
+        )
+        
+        let deleteAction = UIAlertAction(
+            title: NSLocalizedString("delete", comment: "Удалить"),
+            style: .destructive
+        ) { [weak self] _ in
+            self?.deleteTracker(tracker, at: indexPath)
+        }
+        
+        let cancelAction = UIAlertAction(
+            title: NSLocalizedString("cancel", comment: "Отмена"),
+            style: .cancel
+        )
+        
+        alert.addAction(deleteAction)
+        alert.addAction(cancelAction)
+        
+        present(alert, animated: true)
+    }
+    
+    private func deleteTracker(_ tracker: Tracker, at indexPath: IndexPath) {
+        do {
+            try trackerStore.deleteTracker(tracker.trackerId)
+            loadData()
+        } catch {
+            print("Ошибка удаления трекера: \(error.localizedDescription)")
         }
     }
     
@@ -371,22 +443,13 @@ extension TrackersViewController: UICollectionViewDelegateFlowLayout {
                         referenceSizeForHeaderInSection section: Int) -> CGSize {
         CGSize(width: 188, height: 20)
     }
+    
+    func collectionView(_ collectionView: UICollectionView,
+                       contextMenuConfigurationForItemAt indexPath: IndexPath,
+                       point: CGPoint) -> UIContextMenuConfiguration? {
+        
+        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { [weak self] _ in
+            return self?.createContextMenu(for: indexPath) ?? UIMenu()
+        }
+    }
 }
-
-
-//    private func setupMockCategories() {
-//        let healthTrackers = [
-//            Tracker(trackerId: UUID(), title: "Пить воду", emoji: "💧", colorIndex: 3, day: Weekday.allCases, counterDays: 0),
-//            Tracker(trackerId: UUID(), title: "Спать 8 часов", emoji: "😴", colorIndex: 2, day: [.monday, .tuesday, .wednesday, .thursday, .sunday], counterDays: 4)
-//        ]
-//
-//        let workTrackers = [
-//            Tracker(trackerId: UUID(), title: "Планерка", emoji: "📋", colorIndex: 7, day: [.monday, .wednesday, .friday], counterDays: 1)
-//        ]
-//
-//        categories = [
-//            TrackerCategory(title: "Здоровье", trackers: healthTrackers),
-//            TrackerCategory(title: "Работа", trackers: workTrackers)
-//        ]
-//        categoriesInDate = categories
-//    }
