@@ -24,3 +24,10 @@
 "create" = "Create";
 "save" = "Save";
 "edit_habit" = "Edit Habit";
+"filters" = "Filters";
+"all_trackers" = "All Trackers";
+"today_trackers" = "Today's Trackers";
+"completed" = "Completed";
+"uncompleted" = "Uncompleted";
+"nothing_found" = "Nothing Found";
+"nothing_found_filter" = "Nothing Found with Filter";

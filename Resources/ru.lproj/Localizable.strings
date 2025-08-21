@@ -24,3 +24,10 @@
 "create" = "Создать";
 "save" = "Сохранить";
 "edit_habit" = "Редактирование привычки";
+"filters" = "Фильтры";
+"all_trackers" = "Все трекеры";
+"today_trackers" = "Трекеры на сегодня";
+"completed" = "Завершённые";
+"uncompleted" = "Незавершённые";
+"nothing_found" = "Ничего не найдено";
+"nothing_found_filter" = "Ничего не найдено по фильтру";
