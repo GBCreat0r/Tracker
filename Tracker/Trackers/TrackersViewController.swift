@@ -63,6 +63,18 @@ final class TrackersViewController: UIViewController, TrackerCreateViewControlle
         checkOnboardingStatus()
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        AnalyticsService.shared.reportMainScreenOpen()
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        if isMovingFromParent {
+            AnalyticsService.shared.reportMainScreenClose()
+        }
+    }
+    
     private func checkOnboardingStatus() {
         let onboardingCompleted = UserDefaults.standard.bool(forKey: TrackerOnboarding.onboardingKey)
         if !onboardingCompleted {
@@ -83,6 +95,7 @@ final class TrackersViewController: UIViewController, TrackerCreateViewControlle
             filterTrackers(for: currentDate)
         } catch {
             print("Ошибка загрузки данных: \(error.localizedDescription)")
+            AnalyticsService.shared.report(event: "error", screen: "Main", item: "load_data") 
         }
     }
     
@@ -106,18 +119,22 @@ final class TrackersViewController: UIViewController, TrackerCreateViewControlle
     func didCreateTracker(_ tracker: Tracker, categoryTitle: String) {
         do {
             try trackerStore.addTracker(tracker: tracker, categoryTitle: categoryTitle)
+            AnalyticsService.shared.report(event: "tracker_created", screen: "Main")
             loadData()
         } catch {
             print("Ошибка сохранения трекера: \(error.localizedDescription)")
+            AnalyticsService.shared.report(event: "error", screen: "Main", item: "create_tracker")
         }
     }
     
     func didUpdateTracker(_ tracker: Tracker, categoryTitle: String) {
         do {
             try trackerStore.updateTracker(tracker, categoryTitle: categoryTitle)
+            AnalyticsService.shared.report(event: "tracker_updated", screen: "Main")
             loadData()
         } catch {
             print("Ошибка обновления трекера: \(error.localizedDescription)")
+            AnalyticsService.shared.report(event: "error", screen: "Main", item: "update_tracker")
         }
     }
     
@@ -271,6 +288,7 @@ final class TrackersViewController: UIViewController, TrackerCreateViewControlle
         let editAction = UIAction(
             title: NSLocalizedString("edit", comment: "Редактировать")
         ) { [weak self] _ in
+            AnalyticsService.shared.reportEditTap()
             self?.editTracker(tracker, at: indexPath)
         }
         
@@ -278,9 +296,9 @@ final class TrackersViewController: UIViewController, TrackerCreateViewControlle
             title: NSLocalizedString("delete", comment: "Удалить"),
             attributes: .destructive
         ) { [weak self] _ in
+            AnalyticsService.shared.reportDeleteTap()
             self?.confirmDeleteTracker(tracker, at: indexPath)
         }
-        
         return UIMenu(title: "", children: [editAction, deleteAction])
     }
     
@@ -311,7 +329,9 @@ final class TrackersViewController: UIViewController, TrackerCreateViewControlle
         let cancelAction = UIAlertAction(
             title: NSLocalizedString("cancel", comment: "Отмена"),
             style: .cancel
-        )
+        ) { _ in
+            AnalyticsService.shared.report(event: "click", screen: "Main", item: "delete_cancel")
+        }
         
         alert.addAction(deleteAction)
         alert.addAction(cancelAction)
@@ -329,6 +349,7 @@ final class TrackersViewController: UIViewController, TrackerCreateViewControlle
     }
     
     @objc private func filtersButtonTapped() {
+        AnalyticsService.shared.reportFilterTap()
         let filtersVC = FiltersViewController(selectedFilter: currentFilter)
         filtersVC.delegate = self
         let navController = UINavigationController(rootViewController: filtersVC)
@@ -338,8 +359,11 @@ final class TrackersViewController: UIViewController, TrackerCreateViewControlle
     @objc func searchBarTextDidChange(_ searchField: UISearchTextField) {
         guard let searchText = searchField.text?.lowercased(), !searchText.isEmpty else {
             filterTrackers(for: currentDate)
+            AnalyticsService.shared.report(event: "search", screen: "Main", item: "clear")
             return
         }
+        
+        AnalyticsService.shared.report(event: "search", screen: "Main", item: "query")
         
         let filteredCategories = categories.compactMap { category in
             let filteredTrackers = category.trackers.filter { tracker in
@@ -363,12 +387,13 @@ final class TrackersViewController: UIViewController, TrackerCreateViewControlle
         }
         
         collectionView.reloadData()
-        updateFiltersButtonVisibility() // ← ДОБАВЬТЕ ЭТОТ ВЫЗОВ
+        updateFiltersButtonVisibility()
         updatePlaceholderVisibility()
     }
     
     
     @objc func completedTracker(_ sender: UIButton) {
+        AnalyticsService.shared.reportTrackTap()
         guard let cell = sender.superview?.superview as? TrackerCollectionViewCell,
               let indexPath = collectionView.indexPath(for: cell) else {
             return
@@ -392,6 +417,8 @@ final class TrackersViewController: UIViewController, TrackerCreateViewControlle
     
     @objc func datePickerValueChanged(_ sender: UIDatePicker) {
         currentDate = sender.date
+        AnalyticsService.shared.report(event: "date_change", screen: "Main")
+        
         if let searchText = searchTextField.text, !searchText.isEmpty {
             searchBarTextDidChange(searchTextField)
         } else {
@@ -402,6 +429,7 @@ final class TrackersViewController: UIViewController, TrackerCreateViewControlle
     }
     
     @objc private func newTrackerButtonTapped () {
+        AnalyticsService.shared.reportAddTrackTap()
         let createTrackerVS = CreateTrackerViewController()
         let categoriesTitle = categories.map {$0.title}
         createTrackerVS.setExistingCategories(categoriesTitle)
@@ -501,6 +529,10 @@ extension TrackersViewController: UICollectionViewDelegateFlowLayout {
             return self?.createContextMenu(for: indexPath) ?? UIMenu()
         }
     }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        AnalyticsService.shared.reportTrackTap()
+    }
 }
 
 extension TrackersViewController: FiltersViewControllerDelegate {
@@ -515,6 +547,7 @@ extension TrackersViewController: FiltersViewControllerDelegate {
     
     private func applyFilter(_ filter: TrackerFilter) {
         currentFilter = filter
+        AnalyticsService.shared.report(event: "filter_apply", screen: "Main", item: filter.rawValue)
         
         if filter == .today {
             let datePicker = navigationItem.rightBarButtonItem?.customView as? UIDatePicker
