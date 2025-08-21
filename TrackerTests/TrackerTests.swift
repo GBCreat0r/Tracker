@@ -2,16 +2,28 @@
 //  TrackerTests.swift
 //  TrackerTests
 //
-//  Created by semrumyantsev on 23.06.2025.
+//  Created by semrumyantsev on 21.08.2025.
 //
 
-import Testing
+import XCTest
+import SnapshotTesting
 @testable import Tracker
 
-struct TrackerTests {
 
-    @Test func example() async throws {
-        // Write your test here and use APIs like `#expect(...)` to check expected conditions.
+final class TrackersViewControllerSnapshotTests: XCTestCase {
+    
+    func testMainScreenSnapshot() {
+        // Given
+        let VC = TrackersViewController()
+        let navigationController = UINavigationController(rootViewController: VC)
+        
+        VC.loadViewIfNeeded()
+
+        assertSnapshot(
+            matching: navigationController,
+            as: .image(on: .iPhone13),
+            named: "main_screen",
+            record: false // Измените на true для записи нового скриншота
+        )
     }
-
 }
