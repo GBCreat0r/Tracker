@@ -80,6 +80,11 @@
 			path = TrackerStores;
 			sourceTree = "<group>";
 		};
+		CD8298652E53B72100B8BD4C /* Resources */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Resources;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -110,6 +115,7 @@
 		CD03E1FC2E09554A0043B7AB = {
 			isa = PBXGroup;
 			children = (
+				CD8298652E53B72100B8BD4C /* Resources */,
 				CD8298632E4E3B5600B8BD4C /* ForReviewer.swift */,
 				CD82980D2E4B5A4200B8BD4C /* TrackerOnboarding.swift */,
 				CD8297262E293F1600B8BD4C /* TrackerStores */,
@@ -152,6 +158,7 @@
 				CD8296AA2E2544CF00B8BD4C /* LanguageSettings */,
 				CD8296FB2E27D0D800B8BD4C /* TrackerCoreData */,
 				CD8297262E293F1600B8BD4C /* TrackerStores */,
+				CD8298652E53B72100B8BD4C /* Resources */,
 			);
 			name = Tracker;
 			packageProductDependencies = (
@@ -235,6 +242,7 @@
 			knownRegions = (
 				en,
 				Base,
+				ru,
 			);
 			mainGroup = CD03E1FC2E09554A0043B7AB;
 			minimizedProjectReferenceProxies = 1;
@@ -377,6 +385,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -440,6 +449,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";

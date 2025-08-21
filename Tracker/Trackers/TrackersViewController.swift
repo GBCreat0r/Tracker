@@ -13,7 +13,12 @@ final class TrackersViewController: UIViewController, TrackerCreateViewControlle
     private let recordStore = TrackerRecordStore(context: CoreDataManager.shared.context)
     
     private var tittleLabel = UILabel()
-    private var searchBar = UISearchBar()
+    private let searchTextField = {
+        let textField = UISearchTextField()
+            textField.placeholder = NSLocalizedString("search_placeholder", comment: "Плейсхолдер поиска")
+            textField.translatesAutoresizingMaskIntoConstraints = false
+            return textField
+    }()
     private let collectionView: UICollectionView = {
         let collectionView = UICollectionView(
             frame: .zero,
@@ -108,30 +113,28 @@ final class TrackersViewController: UIViewController, TrackerCreateViewControlle
             collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
             collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0),
             collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -84),
-            collectionView.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: 12)
+            collectionView.topAnchor.constraint(equalTo: searchTextField.bottomAnchor, constant: 12)
         ])
     }
     
     private func addSearchBarAndLabel() {
         
-        tittleLabel.text = "Трекеры"
+        tittleLabel.text = NSLocalizedString("trackers_title", comment: "Заголовок экрана трекеров")
         tittleLabel.font = UIFont.systemFont(ofSize: 34, weight: .bold)
         tittleLabel.textColor = .black
         tittleLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(tittleLabel)
         
-        searchBar.placeholder = "Поиск"
-        searchBar.searchBarStyle = .minimal
-        searchBar.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(searchBar)
+        searchTextField.addTarget(self, action: #selector(searchBarTextDidChange), for: .editingChanged)
+           view.addSubview(searchTextField)
         
         NSLayoutConstraint.activate([
             tittleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             tittleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 44),
-            searchBar.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            searchBar.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            searchBar.topAnchor.constraint(equalTo: tittleLabel.bottomAnchor, constant: 7),
-            searchBar.heightAnchor.constraint(equalToConstant: 36)
+            searchTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            searchTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            searchTextField.topAnchor.constraint(equalTo: tittleLabel.bottomAnchor, constant: 7),
+            searchTextField.heightAnchor.constraint(equalToConstant: 36)
         ])
     }
     
@@ -149,7 +152,7 @@ final class TrackersViewController: UIViewController, TrackerCreateViewControlle
         datePicker.preferredDatePickerStyle = .compact
         datePicker.datePickerMode = .date
         datePicker.calendar.firstWeekday = 2
-        datePicker.locale = Locale(identifier: "ru_RU")
+        datePicker.locale = Locale.current
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: datePicker)
         datePicker.addTarget(self, action: #selector(datePickerValueChanged(_:)), for: .valueChanged)
     }
@@ -160,7 +163,7 @@ final class TrackersViewController: UIViewController, TrackerCreateViewControlle
         placeholderImage.contentMode = .scaleAspectFit
         placeholderImage.translatesAutoresizingMaskIntoConstraints = false
         
-        placeholderLabel.text = "Что будем отслеживать?"
+        placeholderLabel.text = NSLocalizedString("empty_state_message", comment: "Сообщение при пустом списке")
         placeholderLabel.font = UIFont.systemFont(ofSize: 12, weight: .medium)
         placeholderLabel.textColor = .gray
         placeholderLabel.textAlignment = .center
@@ -215,6 +218,37 @@ final class TrackersViewController: UIViewController, TrackerCreateViewControlle
         }
     }
     
+    @objc func searchBarTextDidChange(_ searchField: UISearchTextField) {
+        guard let searchText = searchField.text?.lowercased(), !searchText.isEmpty else {
+            filterTrackers(for: currentDate)
+            return
+        }
+        
+        let filteredCategories = categories.compactMap { category in
+            let filteredTrackers = category.trackers.filter { tracker in
+                tracker.title.lowercased().contains(searchText)
+            }
+            return filteredTrackers.isEmpty ? nil : TrackerCategory(
+                title: category.title,
+                trackers: filteredTrackers
+            )
+        }
+        
+        let weekday = Calendar.current.component(.weekday, from: currentDate)
+        let day = Weekday(rawValue: weekday) ?? .monday
+        
+        categoriesInDate = filteredCategories.compactMap { category in
+            let trackersForDay = category.trackers.filter { $0.day.contains(day) }
+            return trackersForDay.isEmpty ? nil : TrackerCategory(
+                title: category.title,
+                trackers: trackersForDay
+            )
+        }
+        
+        collectionView.reloadData()
+        updatePlaceholderVisibility()
+    }
+    
     @objc func completedTracker(_ sender: UIButton) {
         guard let cell = sender.superview?.superview as? TrackerCollectionViewCell,
               let indexPath = collectionView.indexPath(for: cell) else {
@@ -239,7 +273,11 @@ final class TrackersViewController: UIViewController, TrackerCreateViewControlle
     
     @objc func datePickerValueChanged(_ sender: UIDatePicker) {
         currentDate = sender.date
-        filterTrackers(for: currentDate)
+        if let searchText = searchTextField.text, !searchText.isEmpty {
+            searchBarTextDidChange(searchTextField)
+        } else {
+            filterTrackers(for: currentDate)
+        }
     }
     
     @objc private func newTrackerButtonTapped () {

@@ -1,0 +1,12 @@
+/* 
+  Localizable.strings
+  Tracker
+
+  Created by semrumyantsev on 18.08.2025.
+  
+*/
+
+"trackers_title" = "Трекеры";
+"search_placeholder" = "Поиск";
+"empty_state_message" = "Что будем отслеживать?";
+"statistics_title" = "Статистика";
