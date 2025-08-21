@@ -55,11 +55,6 @@
 			path = TrackerTests;
 			sourceTree = "<group>";
 		};
-		CD8296AA2E2544CF00B8BD4C /* LanguageSettings */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = LanguageSettings;
-			sourceTree = "<group>";
-		};
 		CD8296FB2E27D0D800B8BD4C /* TrackerCoreData */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = TrackerCoreData;
@@ -106,7 +101,6 @@
 				CD82980D2E4B5A4200B8BD4C /* TrackerOnboarding.swift */,
 				CD8297262E293F1600B8BD4C /* TrackerStores */,
 				CD8296FB2E27D0D800B8BD4C /* TrackerCoreData */,
-				CD8296AA2E2544CF00B8BD4C /* LanguageSettings */,
 				CD03E2072E09554A0043B7AB /* Tracker */,
 				CD3FE04E2E57901F00973CE1 /* TrackerTests */,
 				CD03E2062E09554A0043B7AB /* Products */,
@@ -139,7 +133,6 @@
 			);
 			fileSystemSynchronizedGroups = (
 				CD03E2072E09554A0043B7AB /* Tracker */,
-				CD8296AA2E2544CF00B8BD4C /* LanguageSettings */,
 				CD8296FB2E27D0D800B8BD4C /* TrackerCoreData */,
 				CD8297262E293F1600B8BD4C /* TrackerStores */,
 				CD8298652E53B72100B8BD4C /* Resources */,

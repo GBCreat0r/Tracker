@@ -31,7 +31,11 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
         backgroundImage.layer.cornerRadius = 16
         contentView.addSubview(backgroundImage)
         
-        emojiLabel.backgroundColor = UIColor.white.withAlphaComponent(0.3)
+        emojiLabel.backgroundColor = UIColor { traitCollection in
+            traitCollection.userInterfaceStyle == .dark ?
+                UIColor.white.withAlphaComponent(0.3) :
+                UIColor.white.withAlphaComponent(0.3)
+        }
         emojiLabel.textAlignment = .center
         emojiLabel.clipsToBounds = true
         emojiLabel.layer.cornerRadius = 12
@@ -51,7 +55,7 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
         contentView.addSubview(counterLabel)
         
         checkButton.setImage(UIImage(resource: .plus), for: .normal)
-        checkButton.tintColor = .white
+        checkButton.tintColor = Colors.background
         checkButton.backgroundColor = .blue
         checkButton.clipsToBounds = true
         checkButton.layer.cornerRadius = 17
@@ -83,6 +87,11 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
             counterLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12),
             counterLabel.centerYAnchor.constraint(equalTo: checkButton.centerYAnchor),   
         ])
+    }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        counterLabel.textColor = Colors.textPrimary
     }
 }
 

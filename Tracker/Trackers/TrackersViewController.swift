@@ -53,7 +53,8 @@ final class TrackersViewController: UIViewController, TrackerCreateViewControlle
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
+        view.backgroundColor = Colors.background
+        collectionView.backgroundColor = Colors.background
         collectionView.delegate = self
         collectionView.dataSource = self
         addAllUI()
@@ -144,10 +145,20 @@ final class TrackersViewController: UIViewController, TrackerCreateViewControlle
         
         tittleLabel.text = NSLocalizedString("trackers_title", comment: "Заголовок экрана трекеров")
         tittleLabel.font = UIFont.systemFont(ofSize: 34, weight: .bold)
-        tittleLabel.textColor = .black
+        tittleLabel.textColor = Colors.textPrimary
         tittleLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(tittleLabel)
         
+//        searchTextField.addTarget(self, action: #selector(searchBarTextDidChange), for: .editingChanged)
+//        view.addSubview(searchTextField)
+        searchTextField.placeholder = NSLocalizedString("search_placeholder", comment: "Плейсхолдер поиска")
+        searchTextField.backgroundColor = Colors.searchFieldBackground // ← Фон поиска
+        searchTextField.textColor = Colors.textPrimary // ← Цвет текста поиска
+        searchTextField.attributedPlaceholder = NSAttributedString(
+            string: NSLocalizedString("search_placeholder", comment: "Плейсхолдер поиска"),
+            attributes: [NSAttributedString.Key.foregroundColor: Colors.placeholder]
+        )
+        searchTextField.translatesAutoresizingMaskIntoConstraints = false
         searchTextField.addTarget(self, action: #selector(searchBarTextDidChange), for: .editingChanged)
         view.addSubview(searchTextField)
         
@@ -166,7 +177,7 @@ final class TrackersViewController: UIViewController, TrackerCreateViewControlle
                                          style: .plain,
                                          target: self,
                                          action: #selector(newTrackerButtonTapped))
-        plusButton.tintColor = .black
+        plusButton.tintColor = Colors.textPrimary
         navigationItem.leftBarButtonItem = plusButton
     }
     
@@ -188,7 +199,7 @@ final class TrackersViewController: UIViewController, TrackerCreateViewControlle
         
         placeholderLabel.text = NSLocalizedString("empty_state_message", comment: "Сообщение при пустом списке")
         placeholderLabel.font = UIFont.systemFont(ofSize: 12, weight: .medium)
-        placeholderLabel.textColor = .gray
+        placeholderLabel.textColor = Colors.textPrimary
         placeholderLabel.textAlignment = .center
         placeholderLabel.translatesAutoresizingMaskIntoConstraints = false
         
