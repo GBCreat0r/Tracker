@@ -41,6 +41,9 @@ final class FiltersViewController: UIViewController {
         tableView.layer.cornerRadius = 16
         tableView.isScrollEnabled = false
         tableView.separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
+        tableView.separatorColor = Colors.placeholder
+        tableView.tableHeaderView = UIView(frame: CGRect(x: 0, y: 0, width: 0, height: 1))
+        tableView.tableFooterView = UIView(frame: CGRect(x: 0, y: 0, width: 0, height: 1))
         return tableView
     }()
     
@@ -59,7 +62,7 @@ final class FiltersViewController: UIViewController {
     }
     
     private func setupUI() {
-        view.backgroundColor = .white
+        view.backgroundColor = Colors.background
         title = NSLocalizedString("filters", comment: "Фильтры")
         
         view.addSubview(tableView)
@@ -84,10 +87,9 @@ extension FiltersViewController: UITableViewDataSource, UITableViewDelegate {
         
         cell.textLabel?.text = filter.localizedTitle
         cell.textLabel?.font = UIFont.systemFont(ofSize: 17)
-        cell.backgroundColor = .white
+        cell.backgroundColor = #colorLiteral(red: 0.9019607843, green: 0.9098039216, blue: 0.9215686275, alpha: 0.3)
         cell.selectionStyle = .none
         
-        // Показываем галочку только для активных фильтров (кроме all и today)
         if filter == selectedFilter && filter != .all && filter != .today {
             cell.accessoryType = .checkmark
             cell.tintColor = .blue

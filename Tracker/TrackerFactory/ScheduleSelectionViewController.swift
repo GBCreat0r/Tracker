@@ -28,8 +28,11 @@ final class ScheduleSelectionViewController: UIViewController {
         let table = UITableView()
         table.register(ScheduleCell.self, forCellReuseIdentifier: "ScheduleCell")
         table.layer.cornerRadius = 16
-        table.separatorStyle = .none
         table.isScrollEnabled = false
+        table.separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
+        table.separatorColor = Colors.placeholder
+        table.tableHeaderView = UIView(frame: CGRect(x: 0, y: 0, width: 0, height: 1))
+        table.tableFooterView = UIView(frame: CGRect(x: 0, y: 0, width: 0, height: 1))
         return table
     }()
     
