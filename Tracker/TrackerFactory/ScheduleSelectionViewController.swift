@@ -36,8 +36,8 @@ final class ScheduleSelectionViewController: UIViewController {
     private let doneButton: UIButton = {
         let button = UIButton()
         button.setTitle("Готово", for: .normal)
-        button.setTitleColor(.white, for: .normal)
-        button.backgroundColor = .black
+        button.setTitleColor(Colors.background, for: .normal)
+        button.backgroundColor = Colors.textPrimary
         button.layer.cornerRadius = 16
         return button
     }()
@@ -45,13 +45,14 @@ final class ScheduleSelectionViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationController?.navigationBar.isHidden = true
+        view.backgroundColor = Colors.background
         setupUI()
         setupConstraints()
         setupActions()
     }
     
     private func setupUI() {
-        view.backgroundColor = .white
+        view.backgroundColor = Colors.background
         
         tableView.dataSource = self
         tableView.delegate = self

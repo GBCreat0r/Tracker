@@ -25,7 +25,7 @@ final class CategorySelectionView: UIViewController {
         label.text = "Привычки и события можно\nобъединить по смыслу"
         label.numberOfLines = 0
         label.textAlignment = .center
-        label.textColor = .gray
+        label.textColor = Colors.textPrimary
         label.font = UIFont.systemFont(ofSize: 16)
         label.isHidden = true
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -43,8 +43,8 @@ final class CategorySelectionView: UIViewController {
     private let addButton: UIButton = {
         let button = UIButton()
         button.setTitle("Добавить категорию", for: .normal)
-        button.setTitleColor(.white, for: .normal)
-        button.backgroundColor = .black
+        button.setTitleColor(Colors.background, for: .normal)
+        button.backgroundColor = Colors.textPrimary
         button.layer.cornerRadius = 16
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
@@ -70,7 +70,7 @@ final class CategorySelectionView: UIViewController {
     
     private func setupUI() {
         title = "Категория"
-        view.backgroundColor = .white
+        view.backgroundColor = Colors.background
         
         tableView.dataSource = self
         tableView.delegate = self

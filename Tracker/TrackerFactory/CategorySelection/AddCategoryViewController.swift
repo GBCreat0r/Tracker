@@ -29,7 +29,7 @@ final class AddCategoryViewController: UIViewController {
     private lazy var saveButton: UIButton = {
         let button = UIButton()
         button.setTitle("Готово", for: .normal)
-        button.setTitleColor(.white, for: .normal)
+        button.setTitleColor(Colors.background, for: .normal)
         button.backgroundColor = .gray
         button.layer.cornerRadius = 16
         button.isEnabled = false
@@ -69,7 +69,7 @@ final class AddCategoryViewController: UIViewController {
     @objc private func textFieldDidChange() {
         let text = textField.text ?? ""
         saveButton.isEnabled = !text.isEmpty
-        saveButton.backgroundColor = text.isEmpty ? .gray : .black
+        saveButton.backgroundColor = text.isEmpty ? .gray : Colors.placeholder
     }
     
     @objc private func saveButtonTapped() {
