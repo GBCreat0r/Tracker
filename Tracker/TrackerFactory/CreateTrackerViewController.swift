@@ -117,7 +117,7 @@ final class CreateTrackerViewController: UIViewController {
         let button = UIButton()
         button.setTitle(NSLocalizedString("cancel", comment: "Отменить"), for: .normal)
         button.setTitleColor(#colorLiteral(red: 0.9607843137, green: 0.4196078431, blue: 0.4235294118, alpha: 1), for: .normal)
-        button.backgroundColor = .white
+        button.backgroundColor = Colors.background
         button.layer.cornerRadius = 16
         button.layer.borderWidth = 1
         button.layer.borderColor = #colorLiteral(red: 0.9607843137, green: 0.4196078431, blue: 0.4235294118, alpha: 1)
@@ -148,7 +148,7 @@ final class CreateTrackerViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationController?.isNavigationBarHidden = true
-        view.backgroundColor = .white
+        view.backgroundColor = Colors.background
         setupUI()
         setupActions()
         
@@ -168,7 +168,7 @@ final class CreateTrackerViewController: UIViewController {
     private static func createSelectionButton(title: String) -> UIButton {
         let button = UIButton()
         button.setTitle(title, for: .normal)
-        button.setTitleColor(.black, for: .normal)
+        button.setTitleColor(Colors.textPrimary, for: .normal)
         button.contentHorizontalAlignment = .left
         button.titleEdgeInsets = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 0)
         button.translatesAutoresizingMaskIntoConstraints = false
