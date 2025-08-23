@@ -12,7 +12,6 @@
 		CD3FE05C2E57903F00973CE1 /* SnapshotTestingCustomDump in Frameworks */ = {isa = PBXBuildFile; productRef = CD3FE05B2E57903F00973CE1 /* SnapshotTestingCustomDump */; };
 		CD3FE0702E57A81F00973CE1 /* AppMetricaCore in Frameworks */ = {isa = PBXBuildFile; productRef = CD3FE06F2E57A81F00973CE1 /* AppMetricaCore */; };
 		CD82980E2E4B5A4200B8BD4C /* TrackerOnboarding.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD82980D2E4B5A4200B8BD4C /* TrackerOnboarding.swift */; };
-		CD8298642E4E3B5600B8BD4C /* ForReviewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD8298632E4E3B5600B8BD4C /* ForReviewer.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -29,7 +28,6 @@
 		CD03E2052E09554A0043B7AB /* Tracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Tracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CD3FE04D2E57901F00973CE1 /* TrackerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TrackerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		CD82980D2E4B5A4200B8BD4C /* TrackerOnboarding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackerOnboarding.swift; sourceTree = "<group>"; };
-		CD8298632E4E3B5600B8BD4C /* ForReviewer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForReviewer.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -99,7 +97,6 @@
 			isa = PBXGroup;
 			children = (
 				CD8298652E53B72100B8BD4C /* Resources */,
-				CD8298632E4E3B5600B8BD4C /* ForReviewer.swift */,
 				CD82980D2E4B5A4200B8BD4C /* TrackerOnboarding.swift */,
 				CD8297262E293F1600B8BD4C /* TrackerStores */,
 				CD8296FB2E27D0D800B8BD4C /* TrackerCoreData */,
@@ -240,7 +237,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				CD82980E2E4B5A4200B8BD4C /* TrackerOnboarding.swift in Sources */,
-				CD8298642E4E3B5600B8BD4C /* ForReviewer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

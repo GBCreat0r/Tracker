@@ -18,7 +18,7 @@ final class ScheduleSelectionViewController: UIViewController {
     
     private let titleLabel: UILabel = {
         let label = UILabel()
-        label.text = "Расписание"
+        label.text = NSLocalizedString("schedule.title", comment: "")
         label.font = .systemFont(ofSize: 16, weight: .medium)
         label.textAlignment = .center
         return label
@@ -38,7 +38,7 @@ final class ScheduleSelectionViewController: UIViewController {
     
     private let doneButton: UIButton = {
         let button = UIButton()
-        button.setTitle("Готово", for: .normal)
+        button.setTitle(NSLocalizedString("common.done", comment: ""), for: .normal)
         button.setTitleColor(Colors.background, for: .normal)
         button.backgroundColor = Colors.textPrimary
         button.layer.cornerRadius = 16

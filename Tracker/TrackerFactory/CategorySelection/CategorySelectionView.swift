@@ -25,7 +25,7 @@ final class CategorySelectionView: UIViewController {
     
     private let placeholderLabel: UILabel = {
         let label = UILabel()
-        label.text = "Привычки и события можно\nобъединить по смыслу"
+        label.text = NSLocalizedString("category.placeholder", comment: "")
         label.numberOfLines = 0
         label.textAlignment = .center
         label.textColor = Colors.textPrimary
@@ -45,7 +45,7 @@ final class CategorySelectionView: UIViewController {
     
     private let addButton: UIButton = {
         let button = UIButton()
-        button.setTitle("Добавить категорию", for: .normal)
+        button.setTitle(NSLocalizedString("category.add_button", comment: ""), for: .normal)
         button.setTitleColor(Colors.background, for: .normal)
         button.backgroundColor = Colors.textPrimary
         button.layer.cornerRadius = 16
@@ -72,7 +72,7 @@ final class CategorySelectionView: UIViewController {
     }
     
     private func setupUI() {
-        title = "Категория"
+        title = NSLocalizedString("category.title", comment: "")
         view.backgroundColor = Colors.background
         
         tableView.dataSource = self
