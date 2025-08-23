@@ -17,9 +17,9 @@ final class TrackersViewControllerSnapshotTests: XCTestCase {
         let navigationController = UINavigationController(rootViewController: VC)
         
         VC.loadViewIfNeeded()
-
+        
         assertSnapshot(
-            matching: navigationController,
+            of: navigationController,
             as: .image(on: .iPhone13),
             named: "main_screen",
             record: false
@@ -27,16 +27,17 @@ final class TrackersViewControllerSnapshotTests: XCTestCase {
     }
     
     func testMainScreenDarkTheme() {
-           let VC = TrackersViewController()
-           let navigationController = UINavigationController(rootViewController: VC)
-           
-           VC.loadViewIfNeeded()
-
-           assertSnapshot(
-               matching: navigationController,
-               as: .image(on: .iPhone13, traits: .init(userInterfaceStyle: .dark)),
-               named: "main_screen_dark",
-               record: false
-           )
-       }
+        let vc = TrackersViewController()
+        let navigationController = UINavigationController(rootViewController: vc)
+        
+        vc.loadViewIfNeeded()
+        
+        assertSnapshot(
+            of: navigationController,
+            as: .image(on: .iPhone13, traits: .init(userInterfaceStyle: .dark)),
+            named: "main_screen_dark",
+            record: false
+        )
+    }
 }
+

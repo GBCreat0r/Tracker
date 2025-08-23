@@ -29,14 +29,14 @@ enum Colors {
     static var textSecondary: UIColor {
         UIColor { traitCollection in
             traitCollection.userInterfaceStyle == .dark ?
-            #colorLiteral(red: 0.6784313725, green: 0.6901960784, blue: 0.7098039216, alpha: 1) : .gray // Серый текст в светлой теме
+            #colorLiteral(red: 0.6784313725, green: 0.6901960784, blue: 0.7098039216, alpha: 1) : .gray
         }
     }
     
     static var searchFieldBackground: UIColor {
         UIColor { traitCollection in
             traitCollection.userInterfaceStyle == .dark ?
-            #colorLiteral(red: 0.462745098, green: 0.462745098, blue: 0.5019607843, alpha: 0.2396264487) : #colorLiteral(red: 0.462745098, green: 0.462745098, blue: 0.5019607843, alpha: 0.12) // Светлый фон поиска
+            #colorLiteral(red: 0.462745098, green: 0.462745098, blue: 0.5019607843, alpha: 0.2396264487) : #colorLiteral(red: 0.462745098, green: 0.462745098, blue: 0.5019607843, alpha: 0.12)
         }
     }
     

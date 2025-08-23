@@ -335,7 +335,8 @@ final class CreateTrackerViewController: UIViewController {
         selectedColor != nil
         
         createButton.isEnabled = isEnabled
-        createButton.backgroundColor = isEnabled ? #colorLiteral(red: 0.1019607843, green: 0.1058823529, blue: 0.1333333333, alpha: 1) : #colorLiteral(red: 0.6823529412, green: 0.6862745098, blue: 0.7058823529, alpha: 1)
+        createButton.backgroundColor = isEnabled ? Colors.textPrimary : #colorLiteral(red: 0.6823529412, green: 0.6862745098, blue: 0.7058823529, alpha: 1)
+        createButton.setTitleColor(isEnabled ? Colors.background : .white, for: .normal)
     }
     
     private func updateCategoryButton(title: String?) {

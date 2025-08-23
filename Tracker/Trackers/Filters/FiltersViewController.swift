@@ -19,10 +19,10 @@ enum TrackerFilter: String, CaseIterable {
     
     var localizedTitle: String {
         switch self {
-        case .all: return NSLocalizedString("all_trackers", comment: "Все трекеры")
-        case .today: return NSLocalizedString("today_trackers", comment: "Трекеры на сегодня")
-        case .completed: return NSLocalizedString("completed", comment: "Завершённые")
-        case .uncompleted: return NSLocalizedString("uncompleted", comment: "Незавершённые")
+        case .all: NSLocalizedString("all_trackers", comment: "Все трекеры")
+        case .today: NSLocalizedString("today_trackers", comment: "Трекеры на сегодня")
+        case .completed: NSLocalizedString("completed", comment: "Завершённые")
+        case .uncompleted: NSLocalizedString("uncompleted", comment: "Незавершённые")
         }
     }
 }
@@ -101,7 +101,7 @@ extension FiltersViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 75
+        75
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {

@@ -31,3 +31,9 @@
 "uncompleted" = "Незавершённые";
 "nothing_found" = "Ничего не найдено";
 "nothing_found_filter" = "Ничего не найдено по фильтру";
+"statistics_title" = "Статистика";
+"best_period" = "Лучший период";
+"perfect_days" = "Идеальные дни";
+"completed_trackers" = "Трекеров завершено";
+"average_value" = "Среднее значение";
+"statistics_empty_message" = "Анализировать пока нечего";

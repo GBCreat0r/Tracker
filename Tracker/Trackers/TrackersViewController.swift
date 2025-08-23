@@ -67,7 +67,7 @@ final class TrackersViewController: UIViewController, TrackerCreateViewControlle
         super.viewDidAppear(animated)
         AnalyticsService.shared.reportMainScreenOpen()
     }
-
+    
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         if isMovingFromParent {
@@ -167,7 +167,7 @@ final class TrackersViewController: UIViewController, TrackerCreateViewControlle
         tittleLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(tittleLabel)
         
-
+        
         searchTextField.placeholder = NSLocalizedString("search_placeholder", comment: "Плейсхолдер поиска")
         searchTextField.backgroundColor = Colors.searchFieldBackground
         searchTextField.textColor = Colors.textPrimary

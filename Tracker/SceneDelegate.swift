@@ -22,10 +22,14 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         let navController = UINavigationController(rootViewController: trackersVC)
         
-        navController.tabBarItem = UITabBarItem(title: NSLocalizedString("trackers_title", comment: "Кнопка в тапбаре"),
-                                                image: UIImage(resource: .tracTabBar), tag: 0)
-        statisticsVS.tabBarItem = UITabBarItem(title: NSLocalizedString("statistics_title", comment: "Кнопка в тапбаре")
-                                               , image: UIImage(resource: .statTabBar), tag: 1)
+        navController.tabBarItem = UITabBarItem(
+            title: NSLocalizedString("trackers_title",comment:"Трекеры"),
+            image: UIImage(resource: .tracTabBar),
+            tag: 0)
+        statisticsVS.tabBarItem = UITabBarItem(
+            title: NSLocalizedString("statistics_title", comment:"Статистика"),
+            image: UIImage(resource: .statTabBar),
+            tag: 1)
         
         let tabBarController = UITabBarController()
         tabBarController.viewControllers = [navController, statisticsVS]

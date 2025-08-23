@@ -31,11 +31,7 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
         backgroundImage.layer.cornerRadius = 16
         contentView.addSubview(backgroundImage)
         
-        emojiLabel.backgroundColor = UIColor { traitCollection in
-            traitCollection.userInterfaceStyle == .dark ?
-                UIColor.white.withAlphaComponent(0.3) :
-                UIColor.white.withAlphaComponent(0.3)
-        }
+        emojiLabel.backgroundColor = UIColor.white.withAlphaComponent(0.3)
         emojiLabel.textAlignment = .center
         emojiLabel.clipsToBounds = true
         emojiLabel.layer.cornerRadius = 12

@@ -102,33 +102,33 @@ final class TrackerStore: NSObject {
     }
     
     func updateTracker(_ tracker: Tracker, categoryTitle: String) throws {
-            let request = TrackerCoreData.fetchRequest()
-            request.predicate = NSPredicate(format: "id == %@", tracker.trackerId.uuidString)
-            
-            guard let trackerCD = try context.fetch(request).first else {
-                throw NSError(domain: "TrackerStore", code: 404, userInfo: [NSLocalizedDescriptionKey: "Трекер не найден"])
-            }
-            
-            trackerCD.title = tracker.title
-            trackerCD.emoji = tracker.emoji
-            trackerCD.color = Int64(tracker.colorIndex)
-            trackerCD.weekday = tracker.day.map { String($0.rawValue) }.joined()
-            
-            let categoryRequest: NSFetchRequest<TrackerCategoryCoreData> = TrackerCategoryCoreData.fetchRequest()
-            categoryRequest.predicate = NSPredicate(format: "title == %@", categoryTitle)
-            
-            if let existingCategory = try? context.fetch(categoryRequest).first {
-                trackerCD.category = existingCategory
-            } else {
-                let newCategory = TrackerCategoryCoreData(context: context)
-                newCategory.id = UUID()
-                newCategory.title = categoryTitle
-                trackerCD.category = newCategory
-            }
-            
-            try context.save()
-            print("TrackerStore: Трекер обновлён")
+        let request = TrackerCoreData.fetchRequest()
+        request.predicate = NSPredicate(format: "id == %@", tracker.trackerId.uuidString)
+        
+        guard let trackerCD = try context.fetch(request).first else {
+            throw NSError(domain: "TrackerStore", code: 404, userInfo: [NSLocalizedDescriptionKey: "Трекер не найден"])
         }
+        
+        trackerCD.title = tracker.title
+        trackerCD.emoji = tracker.emoji
+        trackerCD.color = Int64(tracker.colorIndex)
+        trackerCD.weekday = tracker.day.map { String($0.rawValue) }.joined()
+        
+        let categoryRequest: NSFetchRequest<TrackerCategoryCoreData> = TrackerCategoryCoreData.fetchRequest()
+        categoryRequest.predicate = NSPredicate(format: "title == %@", categoryTitle)
+        
+        if let existingCategory = try? context.fetch(categoryRequest).first {
+            trackerCD.category = existingCategory
+        } else {
+            let newCategory = TrackerCategoryCoreData(context: context)
+            newCategory.id = UUID()
+            newCategory.title = categoryTitle
+            trackerCD.category = newCategory
+        }
+        
+        try context.save()
+        print("TrackerStore: Трекер обновлён")
+    }
 }
 
 extension TrackerStore: NSFetchedResultsControllerDelegate {

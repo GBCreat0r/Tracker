@@ -154,7 +154,6 @@ extension ScheduleSelectionViewController: UITableViewDelegate {
         } else {
             selectedDays.append(weekday)
         }
-        
         tableView.reloadRows(at: [indexPath], with: .none)
     }
 }

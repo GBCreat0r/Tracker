@@ -195,7 +195,6 @@ extension CategorySelectionView: UITableViewDelegate {
                    didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         viewModel.selectCategory(at: indexPath.row)
-        //dismiss(animated: true)
     }
     
     func tableView(_ tableView: UITableView,

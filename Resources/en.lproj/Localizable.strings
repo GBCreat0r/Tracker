@@ -31,3 +31,8 @@
 "uncompleted" = "Uncompleted";
 "nothing_found" = "Nothing Found";
 "nothing_found_filter" = "Nothing Found with Filter";
+"best_period" = "Best Period";
+"perfect_days" = "Perfect Days";
+"completed_trackers" = "Trackers Completed";
+"average_value" = "Average Value";
+"statistics_empty_message" = "Nothing to analyze yet";
