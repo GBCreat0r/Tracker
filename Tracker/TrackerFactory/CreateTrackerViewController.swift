@@ -9,11 +9,16 @@ import UIKit
 
 protocol TrackerCreateViewControllerDelegate: AnyObject {
     func didCreateTracker(_ tracker: Tracker, categoryTitle: String)
+    func didUpdateTracker(_ tracker: Tracker, categoryTitle: String)
 }
 
 final class CreateTrackerViewController: UIViewController {
+    enum Mode {
+        case create
+        case edit(tracker: Tracker, categoryTitle: String)
+    }
     weak var delegate: TrackerCreateViewControllerDelegate?
-    
+    private var mode: Mode = .create
     
     private let scrollView: UIScrollView = {
         let scrollView = UIScrollView()
@@ -29,7 +34,7 @@ final class CreateTrackerViewController: UIViewController {
     
     private let titleLabel: UILabel = {
         let label = UILabel()
-        label.text = "Новая привычка"
+        label.text = NSLocalizedString("new_habit", comment: "Новая привычка")
         label.font = .systemFont(ofSize: 16, weight: .medium)
         label.textAlignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -38,7 +43,7 @@ final class CreateTrackerViewController: UIViewController {
     
     private let textField: UITextField = {
         let field = UITextField()
-        field.placeholder = "Введите название трекера"
+        field.placeholder = NSLocalizedString("enter_tracker_name", comment: "Введите название трекера")
         field.backgroundColor = #colorLiteral(red: 0.9019607843, green: 0.9098039216, blue: 0.9215686275, alpha: 0.3)
         field.layer.cornerRadius = 16
         field.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: field.frame.height))
@@ -58,8 +63,8 @@ final class CreateTrackerViewController: UIViewController {
         return view
     }()
     
-    private let categoryButton = createSelectionButton(title: "Категория")
-    private let scheduleButton = createSelectionButton(title: "Расписание")
+    private let categoryButton = createSelectionButton(title: NSLocalizedString("category", comment: "Категория"))
+    private let scheduleButton = createSelectionButton(title: NSLocalizedString("schedule", comment: "Расписание"))
     
     private let separatorView: UIView = {
         let view = UIView()
@@ -94,7 +99,7 @@ final class CreateTrackerViewController: UIViewController {
     
     private let emojiTitle: UILabel = {
         let label = UILabel()
-        label.text = "Emoji"
+        label.text = NSLocalizedString("emoji", comment: "Emoji")
         label.font = UIFont.systemFont(ofSize: 19, weight: .bold)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -102,7 +107,7 @@ final class CreateTrackerViewController: UIViewController {
     
     private let colorTitle: UILabel = {
         let label = UILabel()
-        label.text = "Цвет"
+        label.text = NSLocalizedString("color", comment: "Цвет")
         label.font = UIFont.systemFont(ofSize: 19, weight: .bold)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -110,9 +115,9 @@ final class CreateTrackerViewController: UIViewController {
     
     private let cancelButton: UIButton = {
         let button = UIButton()
-        button.setTitle("Отменить", for: .normal)
+        button.setTitle(NSLocalizedString("cancel", comment: "Отменить"), for: .normal)
         button.setTitleColor(#colorLiteral(red: 0.9607843137, green: 0.4196078431, blue: 0.4235294118, alpha: 1), for: .normal)
-        button.backgroundColor = .white
+        button.backgroundColor = Colors.background
         button.layer.cornerRadius = 16
         button.layer.borderWidth = 1
         button.layer.borderColor = #colorLiteral(red: 0.9607843137, green: 0.4196078431, blue: 0.4235294118, alpha: 1)
@@ -122,7 +127,7 @@ final class CreateTrackerViewController: UIViewController {
     
     private let createButton: UIButton = {
         let button = UIButton()
-        button.setTitle("Создать", for: .normal)
+        button.setTitle(NSLocalizedString("create", comment: "Создать"), for: .normal)
         button.setTitleColor(.white, for: .normal)
         button.backgroundColor = #colorLiteral(red: 0.6823529412, green: 0.6862745098, blue: 0.7058823529, alpha: 1)
         button.layer.cornerRadius = 16
@@ -143,7 +148,7 @@ final class CreateTrackerViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationController?.isNavigationBarHidden = true
-        view.backgroundColor = .white
+        view.backgroundColor = Colors.background
         setupUI()
         setupActions()
         
@@ -152,6 +157,8 @@ final class CreateTrackerViewController: UIViewController {
         emojiCollectionView.dataSource = self
         colorCollectionView.delegate = self
         colorCollectionView.dataSource = self
+        
+        setupForMode()
     }
     
     func setExistingCategories(_ categories: [String]) {
@@ -161,7 +168,7 @@ final class CreateTrackerViewController: UIViewController {
     private static func createSelectionButton(title: String) -> UIButton {
         let button = UIButton()
         button.setTitle(title, for: .normal)
-        button.setTitleColor(.black, for: .normal)
+        button.setTitleColor(Colors.textPrimary, for: .normal)
         button.contentHorizontalAlignment = .left
         button.titleEdgeInsets = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 0)
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -179,6 +186,10 @@ final class CreateTrackerViewController: UIViewController {
         ])
         
         return button
+    }
+    
+    func setMode(_ mode: Mode) {
+        self.mode = mode
     }
     
     private func setupUI() {
@@ -274,6 +285,43 @@ final class CreateTrackerViewController: UIViewController {
         ])
     }
     
+    private func setupForMode() {
+        switch mode {
+        case .create:
+            titleLabel.text = NSLocalizedString("new_habit", comment: "Новая привычка")
+            createButton.setTitle(NSLocalizedString("create", comment: "Создать"), for: .normal)
+        case .edit(let tracker, let categoryTitle):
+            titleLabel.text = NSLocalizedString("edit_habit", comment: "Редактирование привычки")
+            createButton.setTitle(NSLocalizedString("save", comment: "Сохранить"), for: .normal)
+            
+            textField.text = tracker.title
+            selectedEmoji = tracker.emoji
+            selectedColor = Colors.colors[tracker.colorIndex]
+            selectedCategory = categoryTitle
+            selectedDays = tracker.day
+            
+            updateCategoryButton(title: categoryTitle)
+            updateScheduleButton()
+            updateCreateButtonState()
+            
+            selectInitialEmojiAndColor()
+        }
+    }
+    
+    private func selectInitialEmojiAndColor() {
+        if let emoji = selectedEmoji, let index = emojis.firstIndex(of: emoji) {
+            let indexPath = IndexPath(item: index, section: 0)
+            emojiCollectionView.selectItem(at: indexPath, animated: false, scrollPosition: .centeredHorizontally)
+            collectionView(emojiCollectionView, didSelectItemAt: indexPath)
+        }
+        
+        if let color = selectedColor, let index = Colors.colors.firstIndex(of: color) {
+            let indexPath = IndexPath(item: index, section: 0)
+            colorCollectionView.selectItem(at: indexPath, animated: false, scrollPosition: .centeredHorizontally)
+            collectionView(colorCollectionView, didSelectItemAt: indexPath)
+        }
+    }
+    
     private func setupActions() {
         cancelButton.addTarget(self, action: #selector(cancelButtonTapped), for: .touchUpInside)
         createButton.addTarget(self, action: #selector(createButtonTapped), for: .touchUpInside)
@@ -287,13 +335,15 @@ final class CreateTrackerViewController: UIViewController {
         selectedColor != nil
         
         createButton.isEnabled = isEnabled
-        createButton.backgroundColor = isEnabled ? #colorLiteral(red: 0.1019607843, green: 0.1058823529, blue: 0.1333333333, alpha: 1) : #colorLiteral(red: 0.6823529412, green: 0.6862745098, blue: 0.7058823529, alpha: 1)
+        createButton.backgroundColor = isEnabled ? Colors.textPrimary : #colorLiteral(red: 0.6823529412, green: 0.6862745098, blue: 0.7058823529, alpha: 1)
+        createButton.setTitleColor(isEnabled ? Colors.background : .white, for: .normal)
     }
     
     private func updateCategoryButton(title: String?) {
         if let title = title {
+            let categoryText = NSLocalizedString("category", comment: "Категория")
             let attributedTitle = NSMutableAttributedString(
-                string: "Категория\n",
+                string: "\(categoryText)\n",
                 attributes: [.font: UIFont.systemFont(ofSize: 16, weight: .regular)]
             )
             attributedTitle.append(NSAttributedString(
@@ -303,7 +353,7 @@ final class CreateTrackerViewController: UIViewController {
             categoryButton.setAttributedTitle(attributedTitle, for: .normal)
             categoryButton.titleLabel?.numberOfLines = 2
         } else {
-            categoryButton.setTitle("Категория", for: .normal)
+            categoryButton.setTitle(NSLocalizedString("category", comment: "Категория"), for: .normal)
             categoryButton.titleLabel?.numberOfLines = 1
         }
     }
@@ -311,8 +361,9 @@ final class CreateTrackerViewController: UIViewController {
     private func updateScheduleButton() {
         if !selectedDays.isEmpty {
             let daysString = selectedDays.map { $0.stringValue }.joined(separator: ", ")
+            let scheduleText = NSLocalizedString("schedule", comment: "Расписание")
             let attributedTitle = NSMutableAttributedString(
-                string: "Расписание\n",
+                string: "\(scheduleText)\n",
                 attributes: [.font: UIFont.systemFont(ofSize: 16, weight: .regular)]
             )
             attributedTitle.append(NSAttributedString(
@@ -322,7 +373,7 @@ final class CreateTrackerViewController: UIViewController {
             scheduleButton.setAttributedTitle(attributedTitle, for: .normal)
             scheduleButton.titleLabel?.numberOfLines = 2
         } else {
-            scheduleButton.setTitle("Расписание", for: .normal)
+            scheduleButton.setTitle(NSLocalizedString("schedule", comment: "Расписание"), for: .normal)
             scheduleButton.titleLabel?.numberOfLines = 1
         }
     }
@@ -337,15 +388,30 @@ final class CreateTrackerViewController: UIViewController {
               let colorIndex = Colors.colors.firstIndex(where: { $0 == selectedColor}),
               let category = selectedCategory else { return }
         
-        let newTracker = Tracker(
-            trackerId: UUID(),
-            title: title,
-            emoji: emoji,
-            colorIndex: colorIndex,
-            day: selectedDays,
-            counterDays: 0
-        )
-        delegate?.didCreateTracker(newTracker, categoryTitle: category)
+        switch mode {
+        case .create:
+            let newTracker = Tracker(
+                trackerId: UUID(),
+                title: title,
+                emoji: emoji,
+                colorIndex: colorIndex,
+                day: selectedDays,
+                counterDays: 0
+            )
+            delegate?.didCreateTracker(newTracker, categoryTitle: category)
+            
+        case .edit(let oldTracker, _):
+            let updatedTracker = Tracker(
+                trackerId: oldTracker.trackerId,
+                title: title,
+                emoji: emoji,
+                colorIndex: colorIndex,
+                day: selectedDays,
+                counterDays: oldTracker.counterDays
+            )
+            delegate?.didUpdateTracker(updatedTracker, categoryTitle: category)
+        }
+        
         dismiss(animated: true)
     }
     

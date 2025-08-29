@@ -2,16 +2,42 @@
 //  TrackerTests.swift
 //  TrackerTests
 //
-//  Created by semrumyantsev on 23.06.2025.
+//  Created by semrumyantsev on 21.08.2025.
 //
 
-import Testing
+import XCTest
+import SnapshotTesting
 @testable import Tracker
 
-struct TrackerTests {
 
-    @Test func example() async throws {
-        // Write your test here and use APIs like `#expect(...)` to check expected conditions.
+final class TrackersViewControllerSnapshotTests: XCTestCase {
+    
+    func testMainScreenSnapshot() {
+        let VC = TrackersViewController()
+        let navigationController = UINavigationController(rootViewController: VC)
+        
+        VC.loadViewIfNeeded()
+        
+        assertSnapshot(
+            of: navigationController,
+            as: .image(on: .iPhone13),
+            named: "main_screen",
+            record: false
+        )
     }
-
+    
+    func testMainScreenDarkTheme() {
+        let vc = TrackersViewController()
+        let navigationController = UINavigationController(rootViewController: vc)
+        
+        vc.loadViewIfNeeded()
+        
+        assertSnapshot(
+            of: navigationController,
+            as: .image(on: .iPhone13, traits: .init(userInterfaceStyle: .dark)),
+            named: "main_screen_dark",
+            record: false
+        )
+    }
 }
+

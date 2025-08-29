@@ -51,7 +51,7 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
         contentView.addSubview(counterLabel)
         
         checkButton.setImage(UIImage(resource: .plus), for: .normal)
-        checkButton.tintColor = .white
+        checkButton.tintColor = Colors.background
         checkButton.backgroundColor = .blue
         checkButton.clipsToBounds = true
         checkButton.layer.cornerRadius = 17
@@ -83,6 +83,11 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
             counterLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12),
             counterLabel.centerYAnchor.constraint(equalTo: checkButton.centerYAnchor),   
         ])
+    }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        counterLabel.textColor = Colors.textPrimary
     }
 }
 

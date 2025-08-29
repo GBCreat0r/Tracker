@@ -15,17 +15,20 @@ final class CategorySelectionView: UIViewController {
         let table = UITableView()
         table.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
         table.layer.cornerRadius = 16
-        table.separatorStyle = .none
+        table.separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
         table.translatesAutoresizingMaskIntoConstraints = false
+        table.separatorColor = Colors.placeholder
+        table.tableHeaderView = UIView(frame: CGRect(x: 0, y: 0, width: 0, height: 1))
+        table.tableFooterView = UIView(frame: CGRect(x: 0, y: 0, width: 0, height: 1))
         return table
     }()
     
     private let placeholderLabel: UILabel = {
         let label = UILabel()
-        label.text = "Привычки и события можно\nобъединить по смыслу"
+        label.text = NSLocalizedString("category.placeholder", comment: "")
         label.numberOfLines = 0
         label.textAlignment = .center
-        label.textColor = .gray
+        label.textColor = Colors.textPrimary
         label.font = UIFont.systemFont(ofSize: 16)
         label.isHidden = true
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -42,9 +45,9 @@ final class CategorySelectionView: UIViewController {
     
     private let addButton: UIButton = {
         let button = UIButton()
-        button.setTitle("Добавить категорию", for: .normal)
-        button.setTitleColor(.white, for: .normal)
-        button.backgroundColor = .black
+        button.setTitle(NSLocalizedString("category.add_button", comment: ""), for: .normal)
+        button.setTitleColor(Colors.background, for: .normal)
+        button.backgroundColor = Colors.textPrimary
         button.layer.cornerRadius = 16
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
@@ -69,8 +72,8 @@ final class CategorySelectionView: UIViewController {
     }
     
     private func setupUI() {
-        title = "Категория"
-        view.backgroundColor = .white
+        title = NSLocalizedString("category.title", comment: "")
+        view.backgroundColor = Colors.background
         
         tableView.dataSource = self
         tableView.delegate = self
@@ -192,7 +195,6 @@ extension CategorySelectionView: UITableViewDelegate {
                    didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         viewModel.selectCategory(at: indexPath.row)
-        //dismiss(animated: true)
     }
     
     func tableView(_ tableView: UITableView,

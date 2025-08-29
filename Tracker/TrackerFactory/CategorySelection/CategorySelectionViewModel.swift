@@ -68,6 +68,6 @@ final class CategorySelectionViewModel: CategorySelectionViewModelProtocol {
         onCategorySelected?(selectedCategory)
     }
     
-//  TODO: Смотри MOdel
+    //  TODO: Смотри MOdel
     func deleteCategory(at index: Int) {}
 }

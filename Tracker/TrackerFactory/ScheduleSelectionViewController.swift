@@ -18,7 +18,7 @@ final class ScheduleSelectionViewController: UIViewController {
     
     private let titleLabel: UILabel = {
         let label = UILabel()
-        label.text = "Расписание"
+        label.text = NSLocalizedString("schedule.title", comment: "")
         label.font = .systemFont(ofSize: 16, weight: .medium)
         label.textAlignment = .center
         return label
@@ -28,16 +28,19 @@ final class ScheduleSelectionViewController: UIViewController {
         let table = UITableView()
         table.register(ScheduleCell.self, forCellReuseIdentifier: "ScheduleCell")
         table.layer.cornerRadius = 16
-        table.separatorStyle = .none
         table.isScrollEnabled = false
+        table.separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
+        table.separatorColor = Colors.placeholder
+        table.tableHeaderView = UIView(frame: CGRect(x: 0, y: 0, width: 0, height: 1))
+        table.tableFooterView = UIView(frame: CGRect(x: 0, y: 0, width: 0, height: 1))
         return table
     }()
     
     private let doneButton: UIButton = {
         let button = UIButton()
-        button.setTitle("Готово", for: .normal)
-        button.setTitleColor(.white, for: .normal)
-        button.backgroundColor = .black
+        button.setTitle(NSLocalizedString("common.done", comment: ""), for: .normal)
+        button.setTitleColor(Colors.background, for: .normal)
+        button.backgroundColor = Colors.textPrimary
         button.layer.cornerRadius = 16
         return button
     }()
@@ -45,13 +48,14 @@ final class ScheduleSelectionViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationController?.navigationBar.isHidden = true
+        view.backgroundColor = Colors.background
         setupUI()
         setupConstraints()
         setupActions()
     }
     
     private func setupUI() {
-        view.backgroundColor = .white
+        view.backgroundColor = Colors.background
         
         tableView.dataSource = self
         tableView.delegate = self
@@ -150,7 +154,6 @@ extension ScheduleSelectionViewController: UITableViewDelegate {
         } else {
             selectedDays.append(weekday)
         }
-        
         tableView.reloadRows(at: [indexPath], with: .none)
     }
 }

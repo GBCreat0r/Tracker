@@ -82,7 +82,6 @@ final class TrackerOnboarding: UIPageViewController {
         button.translatesAutoresizingMaskIntoConstraints = false
         VC.view.addSubview(button)
         
-        
         NSLayoutConstraint.activate([
             image.topAnchor.constraint(equalTo: VC.view.topAnchor),
             image.bottomAnchor.constraint(equalTo: VC.view.bottomAnchor),
@@ -98,7 +97,6 @@ final class TrackerOnboarding: UIPageViewController {
             label.trailingAnchor.constraint(equalTo: button.trailingAnchor),
             label.leadingAnchor.constraint(equalTo: button.leadingAnchor)
         ])
-        
         return VC
     }
     
